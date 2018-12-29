@@ -1,19 +1,16 @@
 <html>
 <head>
-  <title>Web Demo</title>
+  <title>Start Page</title>
 </head>
 <body>
-<p>Say <a href="hello2">Hello</a></p>
+  <form method="post" action="LoginController">
+    <label for="uname"><b>Username</b></label><p></p>
+    <input type="text" id="username" name="username"/><p></p>
+    <label for="passd"><b>Password</b></label><p></p>
+    <input type="password" id="password" name="password"/><p></p>
+    <input type="submit" id="login" value="login" />
+  
 
-<form method="post" action="adminlogin">
-  <input type="submit" name="admin" value="admin" />
-</form>
-<form method="post" action="userlogin">
-  <input type="submit" name="user" value="user" />
-</form>
-<form method="post" action="volulogin">
-  <input type="submit" name="volunteer" value="volunteer" />
-</form>
 
 </body>
 </html>

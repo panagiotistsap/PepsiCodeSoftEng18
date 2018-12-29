@@ -35,7 +35,7 @@
         <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
         <init-param>
             <param-name>org.restlet.application</param-name>
-            <param-value>gr.grale.demo.api.RestfulApp</param-value>
+            <param-value>gr.gradle.demo.api.RestfulApp</param-value>
         </init-param>
     </servlet>
 

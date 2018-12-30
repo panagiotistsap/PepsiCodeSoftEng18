@@ -2,7 +2,7 @@ package gr.gradle.demo.data;
 
 public class Limits {
 
-    public static final int DEFAULT_COUNT = 10;
+    public static final int DEFAULT_COUNT = 20;
     public static final int TOTAL_NOT_FETCHED = -1;
 
     private final long start;

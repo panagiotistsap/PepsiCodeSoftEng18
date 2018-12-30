@@ -19,13 +19,32 @@ public class ProductsResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
+        int start,count;
+        Long total;
 
-        List<Product> products = dataAccess.getProducts(new Limits(0, 10));
+        String str_count = getQueryValue("count");
+        String str_start = getQueryValue("start");
+        String sort = getQueryValue("sort");
+        String status = getQueryValue("status");
+        System.out.println(sort);
+        if (str_count == null){
+          count = 20;
+        }
+        else{
+          count = Integer.parseInt(str_count);
+        }
+        if (str_start==null){
+          start = 0;
+        }
+        else{
+          start = Integer.parseInt(str_start);
+        }
 
+        List<Product> products = dataAccess.getProducts(new Limits(start, count),sort,status);
         Map<String, Object> map = new HashMap<>();
-        //map.put("start", xxx);
-        //map.put("count", xxx);
-        //map.put("total", xxx);
+        map.put("start", start);
+        map.put("count", count);
+        map.put("total", products.size());
         map.put("products", products);
 
         return new JsonMapRepresentation(map);

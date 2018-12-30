@@ -18,6 +18,7 @@ public class ProductResource extends ServerResource {
     protected Representation get() throws ResourceException {
 
         String idAttr = getAttribute("id");
+        System.out.println(idAttr);
 
         if (idAttr == null) {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing product id");

@@ -36,7 +36,7 @@ CREATE TABLE `product` (
   `name` varchar(255) NOT NULL,
   `description` mediumtext,
   `category` varchar(128) NOT NULL,
-  `withdrawn` bit(1) NOT NULL DEFAULT b'0',
+  `withdrawn` boolean(1) NOT NULL DEFAULT b'0',
   `tags` mediumtext,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

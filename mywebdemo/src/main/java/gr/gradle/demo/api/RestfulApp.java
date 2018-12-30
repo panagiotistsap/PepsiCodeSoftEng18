@@ -8,7 +8,6 @@ public class RestfulApp extends Application {
 
     @Override
     public synchronized Restlet createInboundRoot() {
-
         Router router = new Router(getContext());
 
         //GET, POST

@@ -46,9 +46,26 @@ public class DataAccess {
         jdbcTemplate = new JdbcTemplate(bds);
     }
 
-    public List<Product> getProducts(Limits limits) {
-        //TODO: Support limits
-        return jdbcTemplate.query("select * from product order by id", EMPTY_ARGS, new ProductRowMapper());
+    public List<Product> getProducts(Limits limits,String sort,String status) {
+        //TODO: Support limits DONE
+        int start = (int)limits.getStart();
+        int count = limits.getCount();
+        String stat,srt;
+        if (status==null || status.equals("ALL")) stat="";
+        else if (status.equals("ACTIVE")) stat="where withdrawn=1";
+        else stat="where withdrawn=0";
+
+        if (sort==null || sort.equals("id|DESC")) srt="order by id desc";
+        else if (sort.equals("id|ASC")) srt="order by id";
+        else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
+        else srt="order by name desc";
+
+        List<Product> helping =  jdbcTemplate.query("select * from product "+stat+" "+srt, EMPTY_ARGS, new ProductRowMapper());
+        if (start>helping.size())
+          return null;
+        if (count>helping.size())
+          return helping.subList(start,helping.size()-1);
+        return helping.subList(start,count);
     }
 
     public Product addProduct(String name, String description, String category, boolean withdrawn, String tags ) {
@@ -99,6 +116,7 @@ public class DataAccess {
             return Optional.empty();
         }
     }
+
 
 
 }

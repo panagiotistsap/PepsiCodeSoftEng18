@@ -5,6 +5,7 @@ import gr.gradle.demo.data.DataAccess;
 import gr.gradle.demo.data.Limits;
 import gr.gradle.demo.data.model.Product;
 import org.restlet.data.Form;
+import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
@@ -44,6 +45,8 @@ public class ProductsResource extends ServerResource {
         Map<String, Object> map = new HashMap<>();
         map.put("start", start);
         map.put("count", count);
+        if (products == null)
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No products available");
         map.put("total", products.size());
         map.put("products", products);
 

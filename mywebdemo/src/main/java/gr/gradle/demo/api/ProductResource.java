@@ -7,8 +7,10 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-
+import java.util.HashMap;
 import java.util.Optional;
+import java.util.List;
+import java.util.Map;
 
 public class ProductResource extends ServerResource {
 
@@ -41,6 +43,20 @@ public class ProductResource extends ServerResource {
     @Override
     protected Representation delete() throws ResourceException {
         //TODO: Implement this
-        throw new ResourceException(Status.SERVER_ERROR_NOT_IMPLEMENTED);
+        String idAttr = getAttribute("id");
+        if (idAttr==null)
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing product id");
+        Long id = null;
+        try{
+          id = Long.parseLong(idAttr);
+        }
+        catch(Exception e){
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr);
+        }
+        if (dataAccess.deleteProduct(id)==false)
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr);
+        Map<String, Object> map = new HashMap<>();
+        map.put("Message","OK");
+        return new JsonMapRepresentation(map);
     }
 }

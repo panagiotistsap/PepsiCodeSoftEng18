@@ -2,6 +2,7 @@ package gr.gradle.demo.data;
 
 
 import gr.gradle.demo.data.model.Product;
+import gr.gradle.demo.data.model.Seller;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -52,7 +53,7 @@ public class DataAccess {
         int count = limits.getCount();
         String stat,srt;
         if (status==null || status.equals("ALL")) stat="";
-        else if (status.equals("ACTIVE")) stat="where withdrawn=1";
+        else if (status.equals("ACTIVE")) stat="where withdrawn=false";
         else stat="where withdrawn=0";
 
         if (sort==null || sort.equals("id|DESC")) srt="order by id desc";
@@ -60,8 +61,8 @@ public class DataAccess {
         else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
         else srt="order by name desc";
 
-        List<Product> helping =  jdbcTemplate.query("select * from product "+stat+" "+srt, EMPTY_ARGS, new ProductRowMapper());
-        if (start>helping.size())
+        List<Product> helping =  jdbcTemplate.query("select * from product " + stat +" "+ srt, EMPTY_ARGS, new ProductRowMapper());
+        if (start>helping.size() || helping.size()==0)
           return null;
         if (count>helping.size())
           return helping.subList(start,helping.size()-1);
@@ -114,6 +115,90 @@ public class DataAccess {
         }
         else {
             return Optional.empty();
+        }
+    }
+    public Boolean deleteProduct(long id){
+      Long[] params = new Long[]{id};
+      String str_id = String.valueOf(id);
+      List<Product> products = jdbcTemplate.query("select * from product where id = "+str_id, EMPTY_ARGS, new ProductRowMapper());
+      if (products.size() == 1)  {
+        jdbcTemplate.update("delete from product where id= "+str_id, EMPTY_ARGS);
+        return true;
+      }
+      else
+        return false;
+    }
+
+    public List<Seller> getSellers(Limits limits,String sort,String status) {
+        //TODO: Support limits DONE
+        int start = (int)limits.getStart();
+        int count = limits.getCount();
+        String stat,srt;
+        if (status==null || status.equals("ALL")) stat="";
+        else if (status.equals("ACTIVE")) stat="where withdrawn=0";
+        else stat="where withdrawn=1";
+
+        if (sort==null || sort.equals("id|DESC")) srt="order by id desc";
+        else if (sort.equals("id|ASC")) srt="order by id";
+        else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
+        else srt="order by name desc";
+
+        List<Seller> helping =  jdbcTemplate.query("select * from seller "+stat+" "+srt, EMPTY_ARGS, new ProductRowMapper());
+        if (start>helping.size() || helping.size()==0)
+          return null;
+        if (count>helping.size())
+          return helping.subList(start,helping.size()-1);
+        return helping.subList(start,count);
+    }
+
+    public Optional<Seller> getSeller(long id) {
+        Long[] params = new Long[]{id};
+        List<Seller> seller = jdbcTemplate.query("select * from seller where id = ?", params, new ProductRowMapper());
+        if (seller.size() == 1)  {
+            return Optional.of(seller.get(0));
+        }
+        else {
+            return Optional.empty();
+        }
+    }
+
+    public Seller addSeller(String name, String address, Double Ing, Double Iat, String tags, boolean withdrawn) {
+        //Create the new product record using a prepared statement
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(
+                        "insert into seller(name, address, Ing, Iat, tags,withdrawn) values(?, ?, ?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, name);
+                ps.setString(2, address);
+                ps.setDouble(3, Ing);
+                ps.setDouble(4, Iat);
+                ps.setString(5, tags);
+                ps.setBoolean(6,withdrawn);
+                return ps;
+            }
+        };
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        int cnt = jdbcTemplate.update(psc, keyHolder);
+
+        if (cnt == 1) {
+            //New row has been added
+            Seller seller = new Seller(
+                keyHolder.getKey().longValue(), //the newly created project id
+                name,
+                address,
+                Ing,
+                Iat,
+                tags,
+                withdrawn
+            );
+            return seller;
+
+        }
+        else {
+            throw new RuntimeException("Creation of Seller failed");
         }
     }
 

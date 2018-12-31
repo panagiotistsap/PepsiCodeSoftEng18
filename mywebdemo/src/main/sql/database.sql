@@ -5,11 +5,13 @@ CREATE TABLE `seller` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `address` varchar(255) NOT NULL,
-  `maplocationx` float(10,5) DEFAULT NULL,
-  `maplocationy` float(10,5) DEFAULT NULL,
+  `Ing` double(10,5) NOT NULL,
+  `Iat` double(10,5) NOT NULL,
+  `tags` varchar(255) DEFAULT NULL,
+  `withdrawn` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

@@ -19,6 +19,30 @@ public class Product {
         this.withdrawn   = withdrawn;
         this.tags        = tags;
     }
+    public Product(Product cop,long id, String name, String description, String category, boolean withdrawn, String tags) {
+        this.id = cop.id;
+        if (name!=null)
+            this.name = name;
+        else 
+            this.name = cop.name;
+        if (description!=null)
+            this.description = description;
+        else
+            this.description = cop.description;
+
+        if (category!=null)
+            this.category = category;
+        else    
+            this.category = cop.category;
+        if (withdrawn==true)
+            this.withdrawn = withdrawn;
+        else
+            this.withdrawn = cop.withdrawn;
+        if (tags!=null)
+            this.tags = tags;
+        else
+            this.tags = cop.tags;
+    }
 
     public long getId() {
         return id;

@@ -1,5 +1,5 @@
 package gr.gradle.demo.api;
-
+import org.restlet.data.Form;
 import gr.gradle.demo.conf.Configuration;
 import gr.gradle.demo.data.DataAccess;
 import gr.gradle.demo.data.model.Product;
@@ -57,5 +57,67 @@ public class ProductResource extends ServerResource {
         Map<String, Object> map = new HashMap<>();
         map.put("Message","OK");
         return new JsonMapRepresentation(map);
+    }
+
+    @Override
+    protected Representation put(Representation entity) throws ResourceException {
+        //Read the parameters
+        //TODO: Implement this DONE//
+        String idAttr = getAttribute("id");
+        Form form = new Form(entity);
+        String name = form.getFirstValue("name");
+        String desc = form.getFirstValue("description");
+        String category = form.getFirstValue("category");
+        boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
+        String tags = form.getFirstValue("tags");
+        Map<String, Object> map = new HashMap<>();
+        System.out.println(name);
+        if (idAttr==null || name==null || category==null){
+            map.put("Message","Invalid Values");
+            return new JsonMapRepresentation(map);
+        }
+        Long id = null;
+        try{
+          id = Long.parseLong(idAttr);
+        }
+        catch(Exception e){
+            map.put("Message","Invalid Values");
+            return new JsonMapRepresentation(map);
+        }
+        Optional<Product> opt =dataAccess.putProduct(id,name,desc,withdrawn,tags,category);
+        Product product = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
+        map.put("Product",product);
+       return new JsonMapRepresentation(map);
+    }
+
+    @Override
+    protected Representation patch(Representation entity) throws ResourceException {
+        //Read the parameters
+        //TODO: Implement this DONE//
+        String idAttr = getAttribute("id");
+        Form form = new Form(entity);
+        String name = form.getFirstValue("name");
+        String desc = form.getFirstValue("description");
+        String category = form.getFirstValue("category");
+        boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
+        String tags = form.getFirstValue("tags");
+        Map<String, Object> map = new HashMap<>();
+        System.out.println(name);
+        if (idAttr==null){
+            map.put("Message","Invalid Values");
+            return new JsonMapRepresentation(map);
+        }
+        Long id = null;
+        try{
+          id = Long.parseLong(idAttr);
+        }
+        catch(Exception e){
+            map.put("Message","Invalid Values");
+            return new JsonMapRepresentation(map);
+        }
+        Optional<Product> opt =dataAccess.patchProduct(id,name,desc,withdrawn,tags,category);
+        Product product = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
+        map.put("Product",product);
+       return new JsonMapRepresentation(map);
     }
 }

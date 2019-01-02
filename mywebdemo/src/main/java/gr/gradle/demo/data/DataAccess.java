@@ -7,7 +7,7 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-
+import org.restlet.resource.ResourceException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
+import org.restlet.data.Status;
 
 public class DataAccess {
 
@@ -117,6 +118,25 @@ public class DataAccess {
             return Optional.empty();
         }
     }
+
+    public Optional<Product> putProduct(Long id,String name,String description,Boolean withdrawn,String tags,String category ){
+        Optional<Product> pro = getProduct(id);
+        Product product = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + id));
+        Product pro2 = new Product(id,name,description,category,withdrawn,tags);
+        jdbcTemplate.update("update product set name=?,description=?,withdrawn=?,tags=?,category=?",pro2.getName(),pro2.getDescription(),pro2.isWithdrawn(),pro2.getTags(),pro2.getCategory());
+        return Optional.of(pro2);
+            
+    }
+
+    public Optional<Product> patchProduct(Long id,String name,String description,Boolean withdrawn,String tags,String category ){
+        Optional<Product> pro = getProduct(id);
+        Product product = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + id));
+        Product pro2 = new Product(product,id,name,description,category,withdrawn,tags);
+        jdbcTemplate.update("update product set name=?,description=?,withdrawn=?,tags=?,category=?",pro2.getName(),pro2.getDescription(),pro2.isWithdrawn(),pro2.getTags(),pro2.getCategory());
+        return Optional.of(pro2);
+            
+    }
+    
 
     public Boolean deleteProduct(long id){
       Long[] params = new Long[]{id};

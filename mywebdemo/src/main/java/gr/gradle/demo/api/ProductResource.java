@@ -9,7 +9,6 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import java.util.HashMap;
 import java.util.Optional;
-import java.util.List;
 import java.util.Map;
 
 public class ProductResource extends ServerResource {
@@ -42,7 +41,7 @@ public class ProductResource extends ServerResource {
 
     @Override
     protected Representation delete() throws ResourceException {
-        //TODO: Implement this
+        //TODO: Implement this DONE//
         String idAttr = getAttribute("id");
         if (idAttr==null)
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing product id");

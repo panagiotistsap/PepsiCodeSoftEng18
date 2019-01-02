@@ -29,7 +29,6 @@ INSERT INTO `users` VALUES (3,'pan','tsap',1),(4,'sof','gal',0);
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
-
 DROP TABLE IF EXISTS `product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

@@ -21,7 +21,6 @@ public class SellersResource extends ServerResource {
     @Override
     protected Representation get() throws ResourceException {
         int start,count;
-        Long total;
 
         String str_count = getQueryValue("count");
         String str_start = getQueryValue("start");

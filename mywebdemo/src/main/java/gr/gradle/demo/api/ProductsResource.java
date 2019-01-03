@@ -62,12 +62,15 @@ public class ProductsResource extends ServerResource {
         String category = form.getFirstValue("category");
         boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
         String tags = form.getFirstValue("tags");
-
+        Map<String, Object> map = new HashMap<>();
         //validate the values (in the general case)
         //...
-
+        if (name==null || category==null){
+          map.put("message","invalid values");
+          return new JsonMapRepresentation(map);
+        }
         Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
-
-        return new JsonProductRepresentation(product);
+        map.put("new product",product);
+        return new JsonMapRepresentation(map);
     }
 }

@@ -72,7 +72,7 @@ public class ProductResource extends ServerResource {
         String tags = form.getFirstValue("tags");
         Map<String, Object> map = new HashMap<>();
         System.out.println(name);
-        if (idAttr==null || name==null || category==null){
+        if (idAttr==null || name==null || category==null || name.equals("") || category.equals("")){
             map.put("Message","Invalid Values");
             return new JsonMapRepresentation(map);
         }
@@ -103,7 +103,7 @@ public class ProductResource extends ServerResource {
         String tags = form.getFirstValue("tags");
         Map<String, Object> map = new HashMap<>();
         System.out.println(name);
-        if (idAttr==null){
+        if (idAttr==null || name.equals("") || category.equals("")){
             map.put("Message","Invalid Values");
             return new JsonMapRepresentation(map);
         }

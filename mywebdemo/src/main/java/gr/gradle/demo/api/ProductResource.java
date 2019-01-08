@@ -98,7 +98,7 @@ public class ProductResource extends ServerResource {
             map.put("Message","Invalid Values");
             return new JsonMapRepresentation(map);
         }
-        Optional<Product> opt =dataAccess.putProduct(id,name,desc,withdrawn,tags,category);
+        Optional<Product> opt = dataAccess.putProduct(id,name,desc,withdrawn,tags,category);
         Product product = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
         map.put("Product",product);
        return new JsonMapRepresentation(map);
@@ -108,6 +108,7 @@ public class ProductResource extends ServerResource {
     protected Representation patch(Representation entity) throws ResourceException {
         //Read the parameters
         //TODO: Implement this DONE//
+        System.out.println("HEYYY");
         String idAttr = getAttribute("id");
         Form form = new Form(entity);
         String name = form.getFirstValue("name");
@@ -117,7 +118,7 @@ public class ProductResource extends ServerResource {
         String tags = form.getFirstValue("tags");
         Map<String, Object> map = new HashMap<>();
         System.out.println(name);
-        if (idAttr==null || name.equals("") || category.equals("")){
+        if (idAttr==null || (name !=null && name.equals("")) || (category!=null && category.equals(""))){
             map.put("Message","Invalid Values");
             return new JsonMapRepresentation(map);
         }

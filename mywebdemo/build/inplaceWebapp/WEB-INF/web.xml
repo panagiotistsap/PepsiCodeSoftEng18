@@ -30,6 +30,11 @@
     </servlet>
 
     <servlet>
+      <servlet-name>LogoutController</servlet-name>
+      <servlet-class>gr.gradle.demo.LogoutController</servlet-class>
+    </servlet>
+
+    <servlet>
         <!-- Restlet adapter for servlets -->
         <servlet-name>RestletAdapter</servlet-name>
         <servlet-class>org.restlet.ext.servlet.ServerServlet</servlet-class>
@@ -56,8 +61,15 @@
 
     <servlet-mapping>
         <servlet-name>LoginController</servlet-name>
-        <url-pattern>/LoginController</url-pattern>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
+
+
+    <servlet-mapping>
+        <servlet-name>LogoutController</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
 
     <!--
     <servlet-mapping>

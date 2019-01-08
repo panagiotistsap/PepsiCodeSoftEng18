@@ -16,6 +16,8 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 import org.restlet.data.Status;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
 
 public class DataAccess {
 
@@ -137,21 +139,25 @@ public class DataAccess {
             
     }
     
-
-    public Boolean deleteProduct(long id){
-      Long[] params = new Long[]{id};
-      String str_id = String.valueOf(id);
-      List<Product> products = jdbcTemplate.query("select * from product where id = "+str_id, EMPTY_ARGS, new ProductRowMapper());
-      if (products.size() == 1)  {
-        jdbcTemplate.update("delete from product where id= "+str_id, EMPTY_ARGS);
-        return true;
-      }
-      else
-        return false;
+    public Boolean deleteProduct(long id,int rights){
+        String str_id = String.valueOf(id);
+        if (rights==0){
+            jdbcTemplate.update("update product set withdrawn=1 where id=?",id);
+            return true;
+        }
+        else{
+            List<Product> products = jdbcTemplate.query("select * from product where id = "+str_id, EMPTY_ARGS, new ProductRowMapper());
+            if (products.size() == 1)  {
+                jdbcTemplate.update("delete from product where id= "+str_id, EMPTY_ARGS);
+                return true;
+            }
+            else
+                return false;
+        }
     }
 
     public List<Seller> getSellers(Limits limits,String sort,String status) {
-        //TODO: Support limits DONE
+        //Support limits DONE
         int start = (int)limits.getStart();
         int count = limits.getCount();
         String stat,srt;
@@ -222,7 +228,67 @@ public class DataAccess {
             throw new RuntimeException("Creation of Seller failed");
         }
     }
+    
+    public Boolean login(String username,String password,String token){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
+            PreparedStatement ps = c.prepareStatement("select admin from users where username=? and password=?");
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                String admin = Integer.toString(rs.getInt("admin"));
+                jdbcTemplate.update("insert into logged (token,admin) values (?,?)",token,Integer.parseInt(admin));
+                return true;
+            }
+            return false;
+        }catch (ClassNotFoundException | SQLException e) {
+            return false;
+            
+            
+		}
 
+    }
+
+    public Boolean logout(String token){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
+            PreparedStatement ps = c.prepareStatement("select admin from logged where token=?");
+            ps.setString(1, token);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                String admin = Integer.toString(rs.getInt("admin"));
+                jdbcTemplate.update("delete from logged where token=?",token);
+                return true;
+            }
+            return false;
+        }catch (ClassNotFoundException | SQLException e) {
+            return false;
+            
+            
+		}
+
+    }  
+
+    public int isloggedin(String token){
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+            Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
+            PreparedStatement ps = c.prepareStatement("select admin from logged where token=?");
+            ps.setString(1, token);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                return rs.getInt("admin");
+            }
+            return -1;
+        }catch (ClassNotFoundException | SQLException e) {
+            return -1;
+            
+            
+		}
+    }
         
 
 

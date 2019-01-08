@@ -49,7 +49,7 @@ public final class response_jsp extends org.apache.jasper.runtime.HttpJspBase
       out.write("    <body>\n");
       out.write("        <h2>");
       out.write((java.lang.String) org.apache.jasper.runtime.PageContextImpl.evaluateExpression("${name}", java.lang.String.class, (PageContext)_jspx_page_context, null));
-      out.write("!</h2>\n");
+      out.write("</h2>\n");
       out.write("    </body>\n");
       out.write("</html>\n");
     } catch (Throwable t) {

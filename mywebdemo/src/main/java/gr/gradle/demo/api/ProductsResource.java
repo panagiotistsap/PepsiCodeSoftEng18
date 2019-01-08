@@ -17,7 +17,7 @@ import java.util.Map;
 public class ProductsResource extends ServerResource {
 
     private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
-
+    
     @Override
     protected Representation get() throws ResourceException {
         int start,count;

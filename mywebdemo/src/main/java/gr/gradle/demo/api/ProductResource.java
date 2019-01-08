@@ -4,12 +4,17 @@ import gr.gradle.demo.conf.Configuration;
 import gr.gradle.demo.data.DataAccess;
 import gr.gradle.demo.data.model.Product;
 import org.restlet.data.Status;
+import org.restlet.engine.adapter.HttpRequest;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Map;
+
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class ProductResource extends ServerResource {
 
@@ -41,7 +46,16 @@ public class ProductResource extends ServerResource {
 
     @Override
     protected Representation delete() throws ResourceException {
-        //TODO: Implement this DONE//
+        
+        String token = getQueryValue("token");
+        if (token==null)
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Get out of here man");
+        int rights = dataAccess.isloggedin(token);
+        if (rights==-1)
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Dude you tryign to hack me?");
+
+        
+        //TODOne: Implement this DONE//
         String idAttr = getAttribute("id");
         if (idAttr==null)
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing product id");
@@ -52,7 +66,7 @@ public class ProductResource extends ServerResource {
         catch(Exception e){
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr);
         }
-        if (dataAccess.deleteProduct(id)==false)
+        if (dataAccess.deleteProduct(id,rights)==false)
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr);
         Map<String, Object> map = new HashMap<>();
         map.put("Message","OK");
@@ -62,7 +76,7 @@ public class ProductResource extends ServerResource {
     @Override
     protected Representation put(Representation entity) throws ResourceException {
         //Read the parameters
-        //TODO: Implement this DONE//
+        //TODOne: Implement this DONE//
         String idAttr = getAttribute("id");
         Form form = new Form(entity);
         String name = form.getFirstValue("name");

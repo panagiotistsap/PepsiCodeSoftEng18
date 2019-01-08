@@ -4,6 +4,6 @@
         <title>Hello Page</title>
     </head>
     <body>
-        <h2>${name}!</h2>
+        <h2>${name}</h2>
     </body>
 </html>

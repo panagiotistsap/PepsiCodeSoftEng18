@@ -54,23 +54,22 @@ public class ProductsResource extends ServerResource {
     @Override
     protected Representation post(Representation entity) throws ResourceException {
 
-        //Create a new restlet form
-        Form form = new Form(entity);
-        //Read the parameters
-        String name = form.getFirstValue("name");
-        String description = form.getFirstValue("description");
-        String category = form.getFirstValue("category");
-        boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
-        String tags = form.getFirstValue("tags");
-        Map<String, Object> map = new HashMap<>();
-        //validate the values (in the general case)
-        //...
-        if (name==null || category==null){
-          map.put("message","invalid values");
-          return new JsonMapRepresentation(map);
-        }
-        Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
-        map.put("new product",product);
+      //Create a new restlet form
+      Form form = new Form(entity);
+      //Read the parameters
+      String name = form.getFirstValue("name");
+      String description = form.getFirstValue("description");
+      String category = form.getFirstValue("category");
+      boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
+      String tags = form.getFirstValue("tags");
+      Map<String, Object> map = new HashMap<>();
+      //validate the values (in the general case)
+      if (name==null || category==null || name.equals("") || category.equals("")){
+        map.put("Message","Invalid Values");
         return new JsonMapRepresentation(map);
+      }
+      Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
+      map.put("new product",product);
+      return new JsonMapRepresentation(map);
     }
 }

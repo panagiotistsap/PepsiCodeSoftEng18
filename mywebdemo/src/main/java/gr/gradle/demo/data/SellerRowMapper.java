@@ -10,7 +10,7 @@ public class SellerRowMapper implements RowMapper {
 
     @Override
     public Seller mapRow(ResultSet rs, int rowNum) throws SQLException {
-
+        System.out.println("GAMIESTE");
         long id            = rs.getLong("id");
         String name        = rs.getString("name");
         String address     = rs.getString("address");

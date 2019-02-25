@@ -19,6 +19,7 @@ public class Product {
         this.withdrawn   = withdrawn;
         this.tags        = tags;
     }
+    
     public Product(Product cop,long id, String name, String description, String category, boolean withdrawn, String tags) {
         this.id = cop.id;
         if (name!=null)

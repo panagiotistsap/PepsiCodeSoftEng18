@@ -22,6 +22,35 @@ public class Seller {
         this.withdrawn    = withdrawn;
     }
 
+    public Seller(Seller cop,long id, String name, String address, 
+            Double Ing, Double Iat, String tags, Boolean withdrawn) {
+        this.id = cop.id;
+        if (name!=null)
+            this.name = name;
+        else 
+            this.name = cop.name;
+        if (address!=null)
+            this.address = address;
+        else
+            this.address = cop.address;
+        if (Ing!=null)
+            this.Ing = Ing;
+        else    
+            this.Ing = cop.Ing;
+        if (Iat!=null)
+            this.Iat = Iat;
+        else
+            this.Iat = cop.Iat;
+        if (tags!=null)
+            this.tags = tags;
+        else
+            this.tags = "";
+        if (withdrawn!=null)
+            this.withdrawn = withdrawn;
+        else
+            this.withdrawn = cop.withdrawn;
+    }
+
     public long getId() {
         return id;
     }
@@ -46,7 +75,7 @@ public class Seller {
         return tags;
     }
 
-    public boolean getWithdrawn() {
+    public boolean isWithdrawn() {
         return withdrawn;
     }
 

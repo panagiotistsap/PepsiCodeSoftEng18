@@ -18,6 +18,10 @@ public class RestfulApp extends Application {
 
         router.attach("/shops" , SellersResource.class);
 
+        router.attach("/shops/{id}" , SellerResource.class);
+
+        router.attach("/prices" , PricesResources.class);
+
         return router;
     }
 

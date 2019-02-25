@@ -68,7 +68,7 @@ public class DataAccess {
         if (start>helping.size() || helping.size()==0)
           return null;
         if (count>helping.size())
-          return helping.subList(start,helping.size()-1);
+          return helping.subList(start,helping.size());
         return helping.subList(start,count);
     }
 
@@ -127,7 +127,6 @@ public class DataAccess {
         Product pro2 = new Product(id,name,description,category,withdrawn,tags);
         jdbcTemplate.update("update product set name=?,description=?,withdrawn=?,tags=?,category=? where id=?",pro2.getName(),pro2.getDescription(),pro2.isWithdrawn(),pro2.getTags(),pro2.getCategory(),id);
         return Optional.of(pro2);
-            
     }
 
     public Optional<Product> patchProduct(Long id,String name,String description,Boolean withdrawn,String tags,String category ){
@@ -135,8 +134,7 @@ public class DataAccess {
         Product product = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + id));
         Product pro2 = new Product(product,id,name,description,category,withdrawn,tags);
         jdbcTemplate.update("update product set name=?,description=?,withdrawn=?,tags=?,category=? where id=?",pro2.getName(),pro2.getDescription(),pro2.isWithdrawn(),pro2.getTags(),pro2.getCategory(),id);
-        return Optional.of(pro2);
-            
+        return Optional.of(pro2);       
     }
     
     public Boolean deleteProduct(long id,int rights){
@@ -170,17 +168,19 @@ public class DataAccess {
         else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
         else srt="order by name desc";
 
-        List<Seller> helping =  jdbcTemplate.query("select * from seller "+stat+" "+srt, EMPTY_ARGS, new ProductRowMapper());
-        if (start>helping.size() || helping.size()==0)
-          return null;
+        List<Seller> helping =  jdbcTemplate.query("select * from parking_lots " + stat +" "+ srt, EMPTY_ARGS, new SellerRowMapper());
+        if (start>helping.size() || helping.size()==0){
+            System.out.println("mpika edw");
+            return null;
+        }
         if (count>helping.size())
-          return helping.subList(start,helping.size()-1);
+          return helping.subList(start,helping.size());
         return helping.subList(start,count);
     }
 
     public Optional<Seller> getSeller(long id) {
         Long[] params = new Long[]{id};
-        List<Seller> seller = jdbcTemplate.query("select * from seller where id = ?", params, new ProductRowMapper());
+        List<Seller> seller = jdbcTemplate.query("select * from parking_lots where id = ?", params, new SellerRowMapper());
         if (seller.size() == 1)  {
             return Optional.of(seller.get(0));
         }
@@ -195,7 +195,7 @@ public class DataAccess {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(
-                        "insert into seller(name, address, Ing, Iat, tags,withdrawn) values(?, ?, ?, ?, ?, ?)",
+                        "insert into parking_lots(name, address, Ing, Iat, tags,withdrawn) values(?, ?, ?, ?, ?, ?)",
                         Statement.RETURN_GENERATED_KEYS
                 );
                 ps.setString(1, name);
@@ -248,7 +248,6 @@ public class DataAccess {
             
             
 		}
-
     }
 
     public Boolean logout(String token){
@@ -269,10 +268,11 @@ public class DataAccess {
             
             
 		}
-
     }  
 
     public int isloggedin(String token){
+        if (token==null)
+            return -1;
         try {
             Class.forName("com.mysql.jdbc.Driver");
             Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
@@ -283,13 +283,40 @@ public class DataAccess {
                 return rs.getInt("admin");
             }
             return -1;
-        }catch (ClassNotFoundException | SQLException e) {
+        }
+        catch (ClassNotFoundException | SQLException e) {
             return -1;
-            
-            
-		}
+        }
     }
         
+    public Boolean deleteShop(long id,int rights){
+        String str_id = String.valueOf(id);
+        List<Product> products = jdbcTemplate.query("select * from parking_lots where id = "+str_id, EMPTY_ARGS, new SellerRowMapper());
+        if (products.size()==0)
+            return false;
+        if (rights==0)
+            jdbcTemplate.update("update parking_lots set withdrawn=1 where id=?",id);
+        else
+            jdbcTemplate.update("delete from parking_lots where id= "+str_id, EMPTY_ARGS);
+        return true;
+    }
 
+    public Optional<Seller> putShop(Long id,String name,String address,Double Ing,Double Iat,String tags,Boolean withdrawn){
+        Optional<Seller> pro = getSeller(id);
+        Seller seller = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Seller not found - id: " + id));
+        Seller pro2 = new Seller(id,name,address,Ing,Iat,tags,withdrawn);
+        jdbcTemplate.update("update parking_lots set name=?,address =?,withdrawn=?,tags=?,Ing=?,Iat=? where id=?",
+                pro2.getName(),pro2.getAddress(),pro2.isWithdrawn(),pro2.getTags(),pro2.getIng(),pro2.getIat(),id);
+        return Optional.of(pro2);
+    }
+
+    public Optional<Seller> patchShop(Long id,String name,String address,Double Ing,Double Iat,String tags,Boolean withdrawn){
+        Optional<Seller> pro = getSeller(id);
+        Seller seller = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Seller not found - id: " + id));
+        Seller pro2 = new Seller(seller,id,name,address,Ing,Iat,tags,withdrawn);
+        jdbcTemplate.update("update parking_lots set name=?,address =?,withdrawn=?,tags=?,Ing=?,Iat=? where id=?",
+                pro2.getName(),pro2.getAddress(),pro2.isWithdrawn(),pro2.getTags(),pro2.getIng(),pro2.getIat(),id);
+        return Optional.of(pro2);
+    }
 
 }

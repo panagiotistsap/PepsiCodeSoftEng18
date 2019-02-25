@@ -27,19 +27,14 @@ public class SellersResource extends ServerResource {
         String sort = getQueryValue("sort");
         String status = getQueryValue("status");
         System.out.println(sort);
-        if (str_count == null){
+        if (str_count == null)
           count = 20;
-        }
-        else{
+        else
           count = Integer.parseInt(str_count);
-        }
-        if (str_start==null){
+        if (str_start==null)
           start = 0;
-        }
-        else{
+        else
           start = Integer.parseInt(str_start);
-        }
-
         List<Seller> sellers = dataAccess.getSellers(new Limits(start, count),sort,status);
         Map<String, Object> map = new HashMap<>();
         map.put("start", start);
@@ -48,31 +43,39 @@ public class SellersResource extends ServerResource {
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No sellers available");
         else
           map.put("total", sellers.size());
-        map.put("sellers", sellers);
+        map.put("parking_lots", sellers);
 
         return new JsonMapRepresentation(map);
     }
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
-
-        //Create a new restlet form
-        Form form = new Form(entity);
-        //Read the parameters
+      String token = getQueryValue("token");
+      int rights = dataAccess.isloggedin(token);
+      if (rights==-1)
+      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+      Form form = new Form(entity);
+      Map<String, Object> map = new HashMap<>();
+      try{
         String name = form.getFirstValue("name");
         String address = form.getFirstValue("address");
         Double Ing = Double.valueOf(form.getFirstValue("Ing"));
         Double Iat = Double.valueOf(form.getFirstValue("Iat"));
         String tags = form.getFirstValue("tags");
-        boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
-
-
-
-        //validate the values (in the general case)
-        //...
-
+        String string_withdrawn = form.getFirstValue("withdrawn");
+        if (name==null || name.equals("") || address==null || address.equals("") 
+              || Ing==null || Iat==null || (!string_withdrawn.equals("0") && !string_withdrawn.equals("1"))){
+          map.put("Message","Invalid Values");
+          return new JsonMapRepresentation(map);
+        }
+        Boolean withdrawn = true;//Boolean.valueOf(string_withdrawn);
         Seller seller = dataAccess.addSeller(name, address, Ing, Iat, tags, withdrawn);
-
         return new JsonSellerRepresentation(seller);
+      }
+      catch(Exception e){
+        map.put("Message","Invalid Values");
+        return new JsonMapRepresentation(map);
+      }
     }
+    
 }

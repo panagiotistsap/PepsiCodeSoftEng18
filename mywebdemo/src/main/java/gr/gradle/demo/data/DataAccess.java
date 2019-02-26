@@ -3,6 +3,9 @@ package gr.gradle.demo.data;
 
 import gr.gradle.demo.data.model.Product;
 import gr.gradle.demo.data.model.Seller;
+import gr.gradle.demo.api.JsonPriceRepresentation;
+import gr.gradle.demo.data.model.Price;
+import gr.gradle.demo.data.model.Result;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -168,7 +171,7 @@ public class DataAccess {
         else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
         else srt="order by name desc";
 
-        List<Seller> helping =  jdbcTemplate.query("select * from parking_lots " + stat +" "+ srt, EMPTY_ARGS, new SellerRowMapper());
+        List<Seller> helping =  jdbcTemplate.query("select * from parkinglots " + stat +" "+ srt, EMPTY_ARGS, new SellerRowMapper());
         if (start>helping.size() || helping.size()==0){
             System.out.println("mpika edw");
             return null;
@@ -180,7 +183,7 @@ public class DataAccess {
 
     public Optional<Seller> getSeller(long id) {
         Long[] params = new Long[]{id};
-        List<Seller> seller = jdbcTemplate.query("select * from parking_lots where id = ?", params, new SellerRowMapper());
+        List<Seller> seller = jdbcTemplate.query("select * from parkinglots where id = ?", params, new SellerRowMapper());
         if (seller.size() == 1)  {
             return Optional.of(seller.get(0));
         }
@@ -195,7 +198,7 @@ public class DataAccess {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
                 PreparedStatement ps = con.prepareStatement(
-                        "insert into parking_lots(name, address, Ing, Iat, tags,withdrawn) values(?, ?, ?, ?, ?, ?)",
+                        "insert into parkinglots(name, address, Ing, Iat, tags,withdrawn) values(?, ?, ?, ?, ?, ?)",
                         Statement.RETURN_GENERATED_KEYS
                 );
                 ps.setString(1, name);
@@ -291,13 +294,13 @@ public class DataAccess {
         
     public Boolean deleteShop(long id,int rights){
         String str_id = String.valueOf(id);
-        List<Product> products = jdbcTemplate.query("select * from parking_lots where id = "+str_id, EMPTY_ARGS, new SellerRowMapper());
+        List<Product> products = jdbcTemplate.query("select * from parkinglots where id = "+str_id, EMPTY_ARGS, new SellerRowMapper());
         if (products.size()==0)
             return false;
         if (rights==0)
-            jdbcTemplate.update("update parking_lots set withdrawn=1 where id=?",id);
+            jdbcTemplate.update("update parkinglots set withdrawn=1 where id=?",id);
         else
-            jdbcTemplate.update("delete from parking_lots where id= "+str_id, EMPTY_ARGS);
+            jdbcTemplate.update("delete from parkinglots where id= "+str_id, EMPTY_ARGS);
         return true;
     }
 
@@ -305,7 +308,7 @@ public class DataAccess {
         Optional<Seller> pro = getSeller(id);
         Seller seller = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Seller not found - id: " + id));
         Seller pro2 = new Seller(id,name,address,Ing,Iat,tags,withdrawn);
-        jdbcTemplate.update("update parking_lots set name=?,address =?,withdrawn=?,tags=?,Ing=?,Iat=? where id=?",
+        jdbcTemplate.update("update parkinglots set name=?,address =?,withdrawn=?,tags=?,Ing=?,Iat=? where id=?",
                 pro2.getName(),pro2.getAddress(),pro2.isWithdrawn(),pro2.getTags(),pro2.getIng(),pro2.getIat(),id);
         return Optional.of(pro2);
     }
@@ -314,9 +317,108 @@ public class DataAccess {
         Optional<Seller> pro = getSeller(id);
         Seller seller = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Seller not found - id: " + id));
         Seller pro2 = new Seller(seller,id,name,address,Ing,Iat,tags,withdrawn);
-        jdbcTemplate.update("update parking_lots set name=?,address =?,withdrawn=?,tags=?,Ing=?,Iat=? where id=?",
+        jdbcTemplate.update("update parkinglots set name=?,address =?,withdrawn=?,tags=?,Ing=?,Iat=? where id=?",
                 pro2.getName(),pro2.getAddress(),pro2.isWithdrawn(),pro2.getTags(),pro2.getIng(),pro2.getIat(),id);
         return Optional.of(pro2);
     }
 
+    public Price postPrice(Long l_productid, Long l_shopid,Double d_price,String date_from, String date_to){
+        //Create the new product record using a prepared statement
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(
+                        "insert into sells(sellerid, productid, price, datefrom, dateto) values(?, ?, ?, ?, ?)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setLong(1, l_shopid);
+                ps.setLong(2, l_productid);
+                ps.setDouble(3, d_price);
+                ps.setString(4, date_from);
+                ps.setString(5, date_to);
+                return ps;
+            }
+        };
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        int cnt = jdbcTemplate.update(psc, keyHolder);
+
+        if (cnt == 1) {
+            //New row has been added
+            Price price = new Price(l_productid,l_shopid,d_price,date_from,date_to);
+            return price;
+
+        }
+        else {
+            throw new RuntimeException("Creation of Product failed");
+        }
+
+
+    }
+
+    public List<Result> getResults(Limits limits,String[] sort_list,int geoDist,Double Lng, Double Lat,
+        Long[] shopsid,Long[] productids,String [] tags,String datefrom, String dateto){
+        //Support limits DONE
+        int i;
+        int start = (int)limits.getStart();
+        int count = limits.getCount();
+        String stat,srt;
+        
+        //sort
+        String order_string = " order by ";
+        for(i=0;i<sort_list.length-1;i++){
+            String[] parts = sort_list[i].split("\\|");
+            order_string = order_string + parts[0] + " "+parts[1]+", ";   
+        }
+        String[] parts = sort_list[sort_list.length-1].split("\\|");
+        order_string = order_string + parts[0] + " " + parts[1];
+        //System.out.println(order_string);
+        //dates
+        String mysql_date="";
+        if (datefrom!=null && dateto!=null){
+            mysql_date="and sells.datefrom between '" + datefrom + "' and '"+dateto+"' ";
+            mysql_date = mysql_date + "and sells.dateto between '" + datefrom + "' and '"+dateto+"' ";
+        }
+        System.out.println(mysql_date);
+        //shop ids
+        String mysql_shops="";
+        if (shopsid!=null){
+            mysql_shops="(";
+            for(i=0;i<shopsid.length-1;i++)
+                mysql_shops=mysql_shops+String.valueOf(shopsid[i])+",";
+            mysql_shops=mysql_shops+String.valueOf(shopsid[shopsid.length-1])+")";           
+        }
+        System.out.println("ftanw7");
+        if (mysql_shops!="")
+            mysql_shops="and "+mysql_shops;
+        //productsid
+        String mysql_prods="";
+        if (productids!=null){
+            mysql_prods="(";
+            for(i=0;i<productids.length-1;i++)
+                mysql_prods=mysql_prods+String.valueOf(productids[i])+",";
+            mysql_prods=mysql_prods+String.valueOf(productids[productids.length-1])+")";           
+        }
+        if (!mysql_prods.equals(""))
+            mysql_prods="and "+mysql_prods;
+            System.out.println("ftanw8");
+            System.out.println(order_string);
+            System.out.println(mysql_prods);
+            System.out.println(mysql_shops);
+            System.out.println(mysql_date);
+
+            System.out.println("select sells.price,product.name,product.id,product.tags"+
+            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address "+
+            "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
+            mysql_prods+" "+mysql_shops+" "+mysql_date+" "+order_string);
+        List<Result> helping =  jdbcTemplate.query("select sells.price,product.name,product.id,product.tags"+
+                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address "+
+                                            "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
+                                            mysql_prods+" "+mysql_shops+" "+mysql_date+" "+order_string, EMPTY_ARGS, new ResultRowMapper());
+        
+        if (count>helping.size())
+           return helping.subList(start,helping.size());
+        return helping.subList(start,count);
+        
+        
+    }
 }

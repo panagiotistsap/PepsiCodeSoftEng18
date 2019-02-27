@@ -21,9 +21,9 @@ public class LoginController extends HttpServlet {
 		String pw = request.getParameter("password");
 		String newtoken = this.createToken();
 		if (dataAccess.login(un, pw, newtoken))
-			request.setAttribute("name", "this is your token:"+newtoken);
+			request.setAttribute("name",newtoken);
 		else 
-			request.setAttribute("name", "you trolling me nigga?");
+			request.setAttribute("name", "denied");
 		request.getRequestDispatcher("response.jsp").forward(request, response);
 		return;
 	}

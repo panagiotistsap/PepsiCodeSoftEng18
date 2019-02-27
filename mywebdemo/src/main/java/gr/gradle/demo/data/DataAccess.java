@@ -367,6 +367,8 @@ public class DataAccess {
         String order_string = " order by ";
         for(i=0;i<sort_list.length-1;i++){
             String[] parts = sort_list[i].split("\\|");
+            if (parts[0].equals("geo.dist"))
+                parts[0]="geodist";
             order_string = order_string + parts[0] + " "+parts[1]+", ";   
         }
         String[] parts = sort_list[sort_list.length-1].split("\\|");
@@ -400,20 +402,32 @@ public class DataAccess {
         }
         if (!mysql_prods.equals(""))
             mysql_prods="and "+mysql_prods;
-            System.out.println("ftanw8");
-            System.out.println(order_string);
-            System.out.println(mysql_prods);
-            System.out.println(mysql_shops);
-            System.out.println(mysql_date);
+        String geostring1="";
+        String geostring2="";
+        if (geoDist!=0){
+            geostring1="111.111 *"+
+            "DEGREES(ACOS(LEAST(COS(RADIANS(parkinglots.Iat))"+
+                 "* COS(RADIANS("+String.valueOf(Lat)+"))"+
+                 "* COS(RADIANS(parkinglots.Ing - "+String.valueOf(Lng)+"))"+
+                 "+ SIN(RADIANS(parkinglots.Iat))"+
+                 "* SIN(RADIANS("+String.valueOf(Lat)+")), 1.0))) AS geodist";
+
+            geostring2="having geodist<"+String.valueOf(geoDist);
+        }
+        System.out.println("ftanw8");
+        System.out.println(order_string);
+        System.out.println(mysql_prods);
+        System.out.println(mysql_shops);
+        System.out.println(mysql_date);
 
             System.out.println("select sells.price,product.name,product.id,product.tags"+
             ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address "+
             "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
             mysql_prods+" "+mysql_shops+" "+mysql_date+" "+order_string);
         List<Result> helping =  jdbcTemplate.query("select sells.price,product.name,product.id,product.tags"+
-                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address "+
+                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,"+geostring1+" "+
                                             "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
-                                            mysql_prods+" "+mysql_shops+" "+mysql_date+" "+order_string, EMPTY_ARGS, new ResultRowMapper());
+                                            mysql_prods+" "+mysql_shops+" "+mysql_date+" "+geostring2+order_string, EMPTY_ARGS, new ResultRowMapper());
         
         if (count>helping.size())
            return helping.subList(start,helping.size());

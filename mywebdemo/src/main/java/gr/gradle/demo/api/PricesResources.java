@@ -50,8 +50,7 @@ public class PricesResources extends ServerResource {
 		Long l_productid = Long.parseLong(productid);
 		System.out.println("ftanw2");
 		Price final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
-        //Price new_price = optional.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Invalid values"));
-		return new JsonPriceRepresentation(final_price);
+    return new JsonPriceRepresentation(final_price);
 		}catch(Exception e){
 			System.out.println("ERROR");
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
@@ -64,7 +63,7 @@ public class PricesResources extends ServerResource {
 		
 
 		try{
-			int start,count,i;
+			int start,count,i,j;
 			String str_count = getQueryValue("count");
 			String str_start = getQueryValue("start");
 			String status = getQueryValue("status");
@@ -160,10 +159,28 @@ public class PricesResources extends ServerResource {
 					tags[i] = parts[i];
 				}
 			}
-			
+			//bazw ta tags se hashmap
+			HashMap<String,Integer> tags_map = new HashMap<String,Integer>();
+			for(i=0;i<tags.length;i++){
+				tags_map.put(tags[i],1);
+			}
 			System.out.println("ftanw6");
 			List<Result> results = dataAccess.getResults(new Limits(start, count),sort_list,geoDist,Lng,Lat,shopsids,productids,tags,str_dateFrom,str_dateTo);
 			Map<String, Object> map = new HashMap<>();
+			//elegxos gia tags
+			List<Result> results_aftertags = new ArrayList<Result>(); Result curr; String[] tags_array;
+			for(i=0;i<results.size();i++){
+				curr = results.get(i);
+				tags_array = curr.gettags().split(",");
+				for(j=0;j<tags_array.length;j++){
+					if(tags_map.containsKey(tags_array[j])){
+						results_aftertags.add(curr);
+						break;
+					}
+				}
+			}
+			results = results_aftertags;
+
 			HashMap<Double, List<Result>> price_map = new HashMap<>();
 			Double price_help; List<Result> help_list;
 			for(i = 0;i <results.size();i++){

@@ -30,5 +30,10 @@ public class Result {
         return this.price;
     }
 
+    public String gettags(){
+        return pr_tags+","+sh_tags;
+
+    }
+
     
 }

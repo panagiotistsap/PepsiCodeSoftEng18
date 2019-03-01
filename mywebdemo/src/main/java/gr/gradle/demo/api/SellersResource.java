@@ -22,11 +22,12 @@ public class SellersResource extends ServerResource {
     @Override
     protected Representation options(){
         Series responseHeaders;
-        responseHeaders = new Series(Header.class);
-        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
-        responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
-        responseHeaders.add(new Header("Access-Control-Allow-Methods", "POST,GET,OPTIONS"));
-
+        responseHeaders = (Series<Header>) getResponse().getAttributes().get("orgorg.restlet.http.headers");
+        if (responseHeaders==null){
+          responseHeaders = new Series(Header.class);
+          getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
+          responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
+        }
 
         return null;
     }

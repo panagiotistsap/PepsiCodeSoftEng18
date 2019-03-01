@@ -72,7 +72,7 @@ public class ProductResource extends ServerResource {
 
       int rights = dataAccess.isloggedin(token);
       if (rights==-1)
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
       String idAttr = getAttribute("id");
       //elegxos an exei dosei id
       if (idAttr==null)
@@ -87,7 +87,7 @@ public class ProductResource extends ServerResource {
       }
 
       if (dataAccess.deleteProduct(id,rights)==false)
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr); //elegxos gia to an to esvise h bash
+        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr); //elegxos gia to an to esvise h bash
       Map<String, Object> map = new HashMap<>();
       map.put("Message","OK");
       return new JsonMapRepresentation(map);
@@ -99,7 +99,7 @@ public class ProductResource extends ServerResource {
       String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
       if(rights==-1)
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
         
       //Read the parameters
      
@@ -139,7 +139,7 @@ public class ProductResource extends ServerResource {
       String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
       if(rights==-1)
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
       //Read the parameters
       String idAttr = getAttribute("id");
       Form form = new Form(entity);

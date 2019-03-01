@@ -50,7 +50,7 @@ public class PricesResources extends ServerResource {
 		String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
 		int rights = dataAccess.isloggedin(token);
     if(rights==-1)
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");	
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");	
 		try{
 	    Form form = new Form(entity);
         String productid = form.getFirstValue("productid");
@@ -203,7 +203,9 @@ public class PricesResources extends ServerResource {
 			else
 				results_aftertags = results;
 			results = results_aftertags;
-
+			if (results.size()==0){
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
+			}
 			HashMap<Double, List<Result>> price_map = new HashMap<>();
 			Double price_help; List<Result> help_list;
 			for(i = 0;i <results.size();i++){

@@ -30,6 +30,7 @@ public class LoginController extends HttpServlet {
 		request.getRequestDispatcher("response.jsp").forward(request, response);
 		return;
 	}
+	
 	private String createToken(){
 		Random r = new Random();
 

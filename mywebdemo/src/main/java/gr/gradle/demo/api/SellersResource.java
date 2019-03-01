@@ -54,7 +54,7 @@ public class SellersResource extends ServerResource {
         map.put("start", start);
         map.put("count", count);
         if (sellers==null)
-          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No sellers available");
+          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
         else
           map.put("total", sellers.size());
         map.put("parking_lots", sellers);
@@ -68,7 +68,7 @@ public class SellersResource extends ServerResource {
       String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
       if (rights==-1)
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
       Form form = new Form(entity);
       Map<String, Object> map = new HashMap<>();
       try{

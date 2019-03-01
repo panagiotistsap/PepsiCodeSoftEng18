@@ -63,7 +63,7 @@ public class SellerResource extends ServerResource {
         String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if (rights==-1)
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
         String idAttr = getAttribute("id");
         if (idAttr==null)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing shop id");
@@ -86,7 +86,7 @@ public class SellerResource extends ServerResource {
         String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if(rights==-1)
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
             
         //Read the parameters
         //TODOne: Implement this DONE//
@@ -127,7 +127,7 @@ public class SellerResource extends ServerResource {
         String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if(rights==-1)
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
+            throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
             
         //Read the parameters
         //TODOne: Implement this DONE//

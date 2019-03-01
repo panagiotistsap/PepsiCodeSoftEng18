@@ -405,7 +405,7 @@ public class DataAccess {
         String geostring1="";
         String geostring2="";
         if (geoDist!=0){
-            geostring1="111.111 *"+
+            geostring1=",111.111 *"+
             "DEGREES(ACOS(LEAST(COS(RADIANS(parkinglots.Iat))"+
                  "* COS(RADIANS("+String.valueOf(Lat)+"))"+
                  "* COS(RADIANS(parkinglots.Ing - "+String.valueOf(Lng)+"))"+
@@ -425,7 +425,7 @@ public class DataAccess {
             "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
             mysql_prods+" "+mysql_shops+" "+mysql_date+" "+order_string);
         List<Result> helping =  jdbcTemplate.query("select sells.price,product.name,product.id,product.tags"+
-                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,"+geostring1+" "+
+                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address"+geostring1+" "+
                                             "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
                                             mysql_prods+" "+mysql_shops+" "+mysql_date+" "+geostring2+order_string, EMPTY_ARGS, new ResultRowMapper());
         

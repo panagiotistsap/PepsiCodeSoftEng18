@@ -9,7 +9,8 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-
+import java.util.*;
+import org.restlet.util.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,11 @@ public class ProductsResource extends ServerResource {
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
-
+      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
+      int rights = dataAccess.isloggedin(token);
+      if(rights==-1)
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
       //Create a new restlet form
       Form form = new Form(entity);
       //Read the parameters

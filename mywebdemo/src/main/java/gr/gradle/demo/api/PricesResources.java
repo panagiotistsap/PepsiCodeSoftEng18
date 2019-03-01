@@ -23,6 +23,8 @@ import java.util.Calendar;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import org.restlet.util.*;
 
 public class PricesResources extends ServerResource {
 
@@ -30,9 +32,10 @@ public class PricesResources extends ServerResource {
 
 	@Override
 	protected Representation post(Representation entity) throws ResourceException {
-		String token = getQueryValue("token");
-      	int rights = dataAccess.isloggedin(token);
-      	if(rights==-1)
+		Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+		String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
+		int rights = dataAccess.isloggedin(token);
+    if(rights==-1)
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");	
 		try{
 	    Form form = new Form(entity);
@@ -58,7 +61,7 @@ public class PricesResources extends ServerResource {
 	}
 
 	@Override
-    protected Representation get() throws ResourceException {
+	protected Representation get() throws ResourceException {
 
 		
 
@@ -161,24 +164,30 @@ public class PricesResources extends ServerResource {
 			}
 			//bazw ta tags se hashmap
 			HashMap<String,Integer> tags_map = new HashMap<String,Integer>();
-			for(i=0;i<tags.length;i++){
-				tags_map.put(tags[i],1);
+			if (tags!=null){
+				for(i=0;i<tags.length;i++){
+					tags_map.put(tags[i],1);
+				}
 			}
 			System.out.println("ftanw6");
 			List<Result> results = dataAccess.getResults(new Limits(start, count),sort_list,geoDist,Lng,Lat,shopsids,productids,tags,str_dateFrom,str_dateTo);
 			Map<String, Object> map = new HashMap<>();
 			//elegxos gia tags
 			List<Result> results_aftertags = new ArrayList<Result>(); Result curr; String[] tags_array;
-			for(i=0;i<results.size();i++){
-				curr = results.get(i);
-				tags_array = curr.gettags().split(",");
-				for(j=0;j<tags_array.length;j++){
-					if(tags_map.containsKey(tags_array[j])){
-						results_aftertags.add(curr);
-						break;
+			if (tags!=null){
+				for(i=0;i<results.size();i++){
+					curr = results.get(i);
+					tags_array = curr.gettags().split(",");
+					for(j=0;j<tags_array.length;j++){
+						if(tags_map.containsKey(tags_array[j])){
+							results_aftertags.add(curr);
+							break;
+						}
 					}
 				}
 			}
+			else
+				results_aftertags = results;
 			results = results_aftertags;
 
 			HashMap<Double, List<Result>> price_map = new HashMap<>();

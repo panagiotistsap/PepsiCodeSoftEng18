@@ -9,7 +9,8 @@ import org.restlet.data.Status;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
-
+import java.util.*;
+import org.restlet.util.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,8 @@ public class SellersResource extends ServerResource {
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
-      String token = getQueryValue("token");
+      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
       if (rights==-1)
       throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");

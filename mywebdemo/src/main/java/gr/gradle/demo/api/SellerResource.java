@@ -11,7 +11,8 @@ import org.restlet.resource.ServerResource;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Map;
-
+import java.util.*;
+import org.restlet.util.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,7 +46,8 @@ public class SellerResource extends ServerResource {
 
     @Override
     protected Representation delete() throws ResourceException {
-        String token = getQueryValue("token");
+        Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+        String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if (rights==-1)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
@@ -67,7 +69,8 @@ public class SellerResource extends ServerResource {
 
     @Override
     protected Representation put(Representation entity) throws ResourceException{
-        String token = getQueryValue("token");
+        Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+        String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if(rights==-1)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
@@ -107,7 +110,8 @@ public class SellerResource extends ServerResource {
 
     @Override
     protected Representation patch(Representation entity) throws ResourceException{
-        String token = getQueryValue("token");
+        Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+        String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if(rights==-1)
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");

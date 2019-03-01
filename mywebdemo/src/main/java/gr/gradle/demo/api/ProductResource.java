@@ -8,10 +8,14 @@ import org.restlet.engine.adapter.HttpRequest;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.engine.header.*;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Map;
-
+import java.util.*;
+import org.restlet.util.*;
+import java.lang.Object;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,31 +28,35 @@ public class ProductResource extends ServerResource {
 
     @Override
     protected Representation get() throws ResourceException {
+      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
+      String idAttr = getAttribute("id");
+      System.out.println(idAttr);
 
-        String idAttr = getAttribute("id");
-        System.out.println(idAttr);
+      if (idAttr == null) {
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing product id");
+      }
 
-        if (idAttr == null) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing product id");
-        }
+      Long id = null;
+      try {
+          id = Long.parseLong(idAttr);
+      }
+      catch(Exception e) {
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr);
+      }
 
-        Long id = null;
-        try {
-            id = Long.parseLong(idAttr);
-        }
-        catch(Exception e) {
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid product id: " + idAttr);
-        }
+      Optional<Product> optional = dataAccess.getProduct(id);
+      Product product = optional.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
 
-        Optional<Product> optional = dataAccess.getProduct(id);
-        Product product = optional.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
-
-        return new JsonProductRepresentation(product);
+      return new JsonProductRepresentation(product);
     }
 
     @Override
     protected Representation delete() throws ResourceException {
-      String token = getQueryValue("token");
+      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
+     
+
       int rights = dataAccess.isloggedin(token);
       if (rights==-1)
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
@@ -74,7 +82,8 @@ public class ProductResource extends ServerResource {
 
     @Override
     protected Representation put(Representation entity) throws ResourceException {
-      String token = getQueryValue("token");
+      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
       if(rights==-1)
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");
@@ -113,7 +122,8 @@ public class ProductResource extends ServerResource {
     @Override
     protected Representation patch(Representation entity) throws ResourceException {
       //check if logged in
-      String token = getQueryValue("token");
+      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
       if(rights==-1)
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Request");

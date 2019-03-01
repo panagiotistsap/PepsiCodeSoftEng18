@@ -9,7 +9,7 @@ public class Seller {
     private final String address;
     private final Double Ing;
     private final Double Iat;
-    private final String tags;
+    private final String[] tags;
     private final boolean withdrawn;
 
     public Seller(long id, String name, String address,double Ing, Double Iat,String tags,boolean withdrawn) {
@@ -18,7 +18,10 @@ public class Seller {
         this.address      = address;
         this.Ing          = Ing;
         this.Iat          = Iat;
-        this.tags         = tags;
+        if (tags!=null)
+            this.tags         = tags.split(",");
+        else 
+            this.tags = new String[0];
         this.withdrawn    = withdrawn;
     }
 
@@ -42,9 +45,9 @@ public class Seller {
         else
             this.Iat = cop.Iat;
         if (tags!=null)
-            this.tags = tags;
+            this.tags = tags.split(",");
         else
-            this.tags = "";
+            this.tags = null;
         if (withdrawn!=null)
             this.withdrawn = withdrawn;
         else
@@ -71,7 +74,7 @@ public class Seller {
         return Iat;
     }
 
-    public String getTags() {
+    public String[] getTags() {
         return tags;
     }
 

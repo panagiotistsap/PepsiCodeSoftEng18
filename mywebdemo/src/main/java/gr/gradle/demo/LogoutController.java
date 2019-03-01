@@ -28,6 +28,7 @@ public class LogoutController extends HttpServlet {
 		else 
 			request.setAttribute("name", "you trolling me boy?");
 		System.out.println("Douleuei kala");
+		
 		request.getRequestDispatcher("response.jsp").forward(request, response);
 		return;
 	}

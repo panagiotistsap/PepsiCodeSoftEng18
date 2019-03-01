@@ -54,13 +54,12 @@ public class DataAccess {
     }
 
     public List<Product> getProducts(Limits limits,String sort,String status) {
-        //TODO: Support limits DONE
         int start = (int)limits.getStart();
         int count = limits.getCount();
         String stat,srt;
-        if (status.equals("ALL")) stat="";
-        else if (status.equals("ACTIVE") || status==null) stat="where withdrawn=false";
-        else if (sort.equals("WITHDRAWN"))
+        if (status==null || status.equals("ACTIVE")) stat="where withdrawn=false";
+        else if (status.equals("ALL")) stat="";
+        else if (status.equals("WITHDRAWN"))
             stat="where withdrawn=true";
         else
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid status Values");

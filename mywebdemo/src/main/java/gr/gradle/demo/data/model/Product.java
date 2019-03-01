@@ -9,7 +9,7 @@ public class Product {
     private final String description;
     private final String category;
     private final boolean withdrawn;
-    private final String tags;
+    private final String[] tags;
 
     public Product(long id, String name, String description, String category, boolean withdrawn, String tags) {
         this.id          = id;
@@ -17,7 +17,10 @@ public class Product {
         this.description = description;
         this.category    = category;
         this.withdrawn   = withdrawn;
-        this.tags        = tags;
+        if(tags!=null)
+            this.tags    = tags.split(",");
+        else
+            this.tags    = new String[0];
     }
     
     public Product(Product cop,long id, String name, String description, String category, boolean withdrawn, String tags) {
@@ -40,7 +43,7 @@ public class Product {
         else
             this.withdrawn = cop.withdrawn;
         if (tags!=null)
-            this.tags = tags;
+            this.tags = tags.split(",");
         else
             this.tags = cop.tags;
     }
@@ -65,7 +68,7 @@ public class Product {
         return withdrawn;
     }
 
-    public String getTags() {
+    public String[] getTags() {
         return tags;
     }
 

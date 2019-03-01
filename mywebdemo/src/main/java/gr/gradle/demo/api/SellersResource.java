@@ -54,7 +54,7 @@ public class SellersResource extends ServerResource {
         map.put("start", start);
         map.put("count", count);
         if (sellers==null)
-          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
+          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shops not found");
         else
           map.put("total", sellers.size());
         map.put("parking_lots", sellers);

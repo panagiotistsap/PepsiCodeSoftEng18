@@ -204,7 +204,7 @@ public class PricesResources extends ServerResource {
 				results_aftertags = results;
 			results = results_aftertags;
 			if (results.size()==0){
-				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Not found");
 			}
 			HashMap<Double, List<Result>> price_map = new HashMap<>();
 			Double price_help; List<Result> help_list;

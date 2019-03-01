@@ -18,7 +18,8 @@ public class LoginController extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.addHeader("Access-Control-Allow-Origin", "*");
-		
+		response.addHeader("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,PATCH,OPTIONS");
+
 		String un = request.getParameter("username");
 		String pw = request.getParameter("password");
 		String newtoken = this.createToken();

@@ -25,6 +25,7 @@ public class SellersResource extends ServerResource {
         responseHeaders = new Series(Header.class);
         getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
         responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
+        responseHeaders.add(new Header("Access-Control-Allow-Methods", "POST,GET,OPTIONS"));
 
 
         return null;

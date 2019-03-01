@@ -17,6 +17,8 @@ public class LoginController extends HttpServlet {
 	private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		
 		String un = request.getParameter("username");
 		String pw = request.getParameter("password");
 		String newtoken = this.createToken();

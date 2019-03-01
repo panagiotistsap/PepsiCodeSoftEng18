@@ -21,25 +21,22 @@ public class ProductsResource extends ServerResource {
     
     @Override
     protected Representation get() throws ResourceException {
+      try{
         int start,count;
         String str_count = getQueryValue("count");
         String str_start = getQueryValue("start");
         String sort = getQueryValue("sort");
         String status = getQueryValue("status");
         System.out.println(sort);
-        if (str_count == null){
+        if (str_count == null)
           count = 20;
-        }
-        else{
+        else
           count = Integer.parseInt(str_count);
-        }
-        if (str_start==null){
+        if (str_start==null)
           start = 0;
-        }
-        else{
+        else
           start = Integer.parseInt(str_start);
-        }
-
+        
         List<Product> products = dataAccess.getProducts(new Limits(start, count),sort,status);
         Map<String, Object> map = new HashMap<>();
         map.put("start", start);
@@ -50,31 +47,39 @@ public class ProductsResource extends ServerResource {
         map.put("products", products);
 
         return new JsonMapRepresentation(map);
+      }catch(Exception e){
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
+      }
     }
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
-      Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
-      String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
-      int rights = dataAccess.isloggedin(token);
-      if(rights==-1)
-        throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
-      //Create a new restlet form
-      Form form = new Form(entity);
-      //Read the parameters
-      String name = form.getFirstValue("name");
-      String description = form.getFirstValue("description");
-      String category = form.getFirstValue("category");
-      boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
-      String tags = form.getFirstValue("tags");
-      Map<String, Object> map = new HashMap<>();
-      //validate the values (in the general case)
-      if (name==null || category==null || name.equals("") || category.equals(""))
+      try{
+        Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+        String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
+        int rights = dataAccess.isloggedin(token);
+        if(rights==-1)
+          throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
+        //Create a new restlet form
+        Form form = new Form(entity);
+        //Read the parameters
+        String name = form.getFirstValue("name");
+        String description = form.getFirstValue("description");
+        String category = form.getFirstValue("category");
+        boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
+        String tags = form.getFirstValue("tags");
+        Map<String, Object> map = new HashMap<>();
+        //validate the values (in the general case)
+        if (name==null || category==null || name.equals("") || category.equals(""))
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
+        
+        Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
+        map.put("new product",product);
+        return new JsonMapRepresentation(map);
+      }catch(Exception e){
+        System.out.println("Error");
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
-      
-      Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
-      map.put("new product",product);
-      return new JsonMapRepresentation(map);
+      }
     }
     
     @Override

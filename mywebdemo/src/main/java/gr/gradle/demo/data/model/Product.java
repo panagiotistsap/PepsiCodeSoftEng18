@@ -68,8 +68,11 @@ public class Product {
         return withdrawn;
     }
 
-    public String[] getTags() {
-        return tags;
+    public String getTags() {
+        String res = "";
+        for(int i=0; i<this.tags.length;i++)
+            res = res + "," + tags[i];
+        return res;
     }
 
     @Override

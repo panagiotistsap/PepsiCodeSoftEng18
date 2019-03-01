@@ -74,8 +74,11 @@ public class Seller {
         return Iat;
     }
 
-    public String[] getTags() {
-        return tags;
+    public String getTags() {
+        String res = "";
+        for(int i=0; i<this.tags.length;i++)
+            res = res + "," + tags[i];
+        return res;
     }
 
     public boolean isWithdrawn() {

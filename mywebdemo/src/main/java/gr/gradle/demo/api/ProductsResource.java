@@ -1,5 +1,5 @@
 package gr.gradle.demo.api;
-
+import org.restlet.data.Header;
 import gr.gradle.demo.conf.Configuration;
 import gr.gradle.demo.data.DataAccess;
 import gr.gradle.demo.data.Limits;
@@ -69,12 +69,22 @@ public class ProductsResource extends ServerResource {
       String tags = form.getFirstValue("tags");
       Map<String, Object> map = new HashMap<>();
       //validate the values (in the general case)
-      if (name==null || category==null || name.equals("") || category.equals("")){
-        map.put("Message","Invalid Values");
-        return new JsonMapRepresentation(map);
-      }
+      if (name==null || category==null || name.equals("") || category.equals(""))
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
+      
       Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
       map.put("new product",product);
       return new JsonMapRepresentation(map);
+    }
+    
+    @Override
+    protected Representation options(){
+        Series responseHeaders;
+        responseHeaders = new Series(Header.class);
+        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
+        responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
+
+
+        return null;
     }
 }

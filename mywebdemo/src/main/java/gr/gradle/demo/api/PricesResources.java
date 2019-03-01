@@ -11,6 +11,7 @@ import org.restlet.engine.adapter.HttpRequest;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
@@ -26,6 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import org.restlet.util.*;
 import org.restlet.data.Header;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 
 public class PricesResources extends ServerResource {
 
@@ -52,25 +57,28 @@ public class PricesResources extends ServerResource {
     if(rights==-1)
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");	
 		try{
-	    Form form = new Form(entity);
-        String productid = form.getFirstValue("productid");
-        String shopid = form.getFirstValue("shopid");
-        String date_from = form.getFirstValue("dateFrom");
-        String date_to = form.getFirstValue("dateTo");
-        String price = form.getFirstValue("price");
-      	if(!date_to.matches("\\d{4}-\\d{2}-\\d{2}") || !date_from.matches("\\d{4}-\\d{2}-\\d{2}")){
-      		throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
-		}
-		System.out.println("ftanw");
-		Double d_price = Double.parseDouble(price);
-		Long l_shopid = Long.parseLong(shopid);
-		Long l_productid = Long.parseLong(productid);
-		System.out.println("ftanw2");
-		Price final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
-    return new JsonPriceRepresentation(final_price);
-		}catch(Exception e){
-			System.out.println("ERROR");
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
+			Form form = new Form(entity);
+			System.out.println("gamw");
+			String productid = form.getFirstValue("productId");
+			String shopid = form.getFirstValue("shopId");
+			String date_from = form.getFirstValue("dateFrom");
+			String date_to = form.getFirstValue("dateTo");
+			String price = form.getFirstValue("price");
+			System.out.println(date_to);
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			if (!(this.isValidDate(date_to) && this.isValidDate(date_from)))
+				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
+			
+			//System.out.println("ftanw");
+			Double d_price = Double.parseDouble(price);
+			Long l_shopid = Long.parseLong(shopid);
+			Long l_productid = Long.parseLong(productid);
+			System.out.println("ftanw2");
+			Price final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
+			return new JsonPriceRepresentation(final_price);
+			}catch(Exception e){
+				System.out.println("ERROR");
+				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
 		}
 	}
 
@@ -232,5 +240,15 @@ public class PricesResources extends ServerResource {
 		}
 	}
 
+	boolean isValidDate(String input) {
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			  format.parse(input);
+				return true;
+		}
+		catch(ParseException e){
+				 return false;
+		}
+}
 
 }

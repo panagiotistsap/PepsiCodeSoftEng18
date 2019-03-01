@@ -78,16 +78,19 @@ public class SellersResource extends ServerResource {
         Double Iat = Double.valueOf(form.getFirstValue("Iat"));
         String tags = form.getFirstValue("tags");
         String string_withdrawn = form.getFirstValue("withdrawn");
+        
         if (name==null || name.equals("") || address==null || address.equals("") 
               || Ing==null || Iat==null || (!string_withdrawn.equals("0") && !string_withdrawn.equals("1"))){
           map.put("Message","Invalid Values");
           return new JsonMapRepresentation(map);
         }
-        Boolean withdrawn = true;//Boolean.valueOf(string_withdrawn);
+        System.out.println("damn");
+        Boolean withdrawn = Boolean.valueOf(string_withdrawn);
         Seller seller = dataAccess.addSeller(name, address, Ing, Iat, tags, withdrawn);
         return new JsonSellerRepresentation(seller);
       }
       catch(Exception e){
+        System.out.println("geia");
         map.put("Message","Invalid Values");
         return new JsonMapRepresentation(map);
       }

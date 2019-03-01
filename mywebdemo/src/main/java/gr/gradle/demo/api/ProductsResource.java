@@ -45,7 +45,7 @@ public class ProductsResource extends ServerResource {
         map.put("start", start);
         map.put("count", count);
         if (products == null)
-          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No products available");
+          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No products available");
         map.put("total", products.size());
         map.put("products", products);
 

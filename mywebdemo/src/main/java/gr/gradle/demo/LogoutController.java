@@ -17,8 +17,11 @@ public class LogoutController extends HttpServlet {
 	private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String token = request.getParameter("token");
-		
+		response.addHeader("Access-Control-Allow-Origin", "*");
+		//Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
+		  String token =  request.getHeader("X-OBSERVATORY-AUTH");//headers.getFirstValue("X-OBSERVATORY-AUTH");
+		  //System.out.println(token);
+				
 		if (dataAccess.logout(token))
 			request.setAttribute("name", "successfull logout");
 		else 

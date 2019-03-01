@@ -25,10 +25,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import org.restlet.util.*;
+import org.restlet.data.Header;
 
 public class PricesResources extends ServerResource {
 
 	private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
+
+
+
+	@Override
+	protected Representation options(){
+		Series responseHeaders;
+		responseHeaders = new Series(Header.class);
+		getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
+		responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
+		return null;
+	}
+		
 
 	@Override
 	protected Representation post(Representation entity) throws ResourceException {

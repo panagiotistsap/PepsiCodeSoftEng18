@@ -16,9 +16,21 @@ import org.restlet.util.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.restlet.data.Header;
 public class SellerResource extends ServerResource {
 
     private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
+
+    @Override
+    protected Representation options(){
+        Series responseHeaders;
+        responseHeaders = new Series(Header.class);
+        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
+        responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
+
+
+        return null;
+    }
 
     @Override
     protected Representation get() throws ResourceException {

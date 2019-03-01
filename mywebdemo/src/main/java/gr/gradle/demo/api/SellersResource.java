@@ -1,5 +1,5 @@
 package gr.gradle.demo.api;
-
+import org.restlet.data.Header;
 import gr.gradle.demo.conf.Configuration;
 import gr.gradle.demo.data.DataAccess;
 import gr.gradle.demo.data.Limits;
@@ -19,6 +19,17 @@ public class SellersResource extends ServerResource {
 
     private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
 
+    @Override
+    protected Representation options(){
+        Series responseHeaders;
+        responseHeaders = new Series(Header.class);
+        getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
+        responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
+
+
+        return null;
+    }
+    
     @Override
     protected Representation get() throws ResourceException {
         int start,count;

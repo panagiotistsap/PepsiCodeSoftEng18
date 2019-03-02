@@ -330,6 +330,11 @@ public class DataAccess {
 
     public Price postPrice(Long l_productid, Long l_shopid,Double d_price,String date_from, String date_to){
         //Create the new product record using a prepared statement
+        Optional<Seller> sel = getSeller(l_shopid);
+        Optional<Product> pro = getProduct(l_productid);
+        Seller seller = sel.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Seller not found - id: " + l_shopid));
+        Product prod = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + l_productid));
+        //  throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop or Product not found ");
         PreparedStatementCreator psc = new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
@@ -345,6 +350,7 @@ public class DataAccess {
                 return ps;
             }
         };
+
         GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
         int cnt = jdbcTemplate.update(psc, keyHolder);
 

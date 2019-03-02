@@ -62,19 +62,27 @@ public class ProductsResource extends ServerResource {
         if(rights==-1)
           throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
         //Create a new restlet form
-      try{
         Form form = new Form(entity);
         //Read the parameters
         String name = form.getFirstValue("name");
         String description = form.getFirstValue("description");
         String category = form.getFirstValue("category");
-        boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
+        String str_with  = form.getFirstValue("withdrawn");
         String tags = form.getFirstValue("tags");
         Map<String, Object> map = new HashMap<>();
-        //validate the values (in the general case)
         if (name==null || category==null || name.equals("") || category.equals(""))
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
-        
+        Boolean withdrawn;
+        withdrawn = null;
+        if (str_with!=null){
+            if (!((str_with.equals("0") || str_with.equals("1") || str_with.equals("true") || str_with.equals("false"))))
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid withdrawn Values");
+            withdrawn = str_with.equals("1") || str_with.equals("true");
+        }
+        else
+          withdrawn = false;
+        //validate the values (in the general case)
+        try{
         Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
         map.put("new product",product);
         return new JsonMapRepresentation(map);
@@ -96,5 +104,5 @@ public class ProductsResource extends ServerResource {
 
         return null;
     }*/
-    
+
 }

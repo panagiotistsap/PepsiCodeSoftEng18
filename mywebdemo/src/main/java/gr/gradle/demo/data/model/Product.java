@@ -1,5 +1,5 @@
 package gr.gradle.demo.data.model;
-
+import java.util.Arrays;
 import java.util.Objects;
 
 public class Product {
@@ -11,19 +11,26 @@ public class Product {
     private final boolean withdrawn;
     private final String[] tags;
 
-    public Product(long id, String name, String description, String category, boolean withdrawn, String tags) {
+    public Product(long id, String name, String description, String category, Boolean withdrawn, String tags) {
         this.id          = id;
         this.name        = name;
-        this.description = description;
+        if (description==null)
+            this.description = null;
+        else
+            this.description = description;
         this.category    = category;
-        this.withdrawn   = withdrawn;
-        if(tags!=null)
-            this.tags    = tags.split(",");
+        if (withdrawn==null)
+            this.withdrawn = false;
+        else
+            this.withdrawn = withdrawn;
+        if(tags!=null){
+            this.tags = tags.split(","); //Arrays.copyOfRange(tags.split(","), 1, tags.split(",").length);;
+        }
         else
             this.tags    = new String[0];
     }
     
-    public Product(Product cop,long id, String name, String description, String category, boolean withdrawn, String tags) {
+    public Product(Product cop,long id, String name, String description, String category, Boolean withdrawn, String tags) {
         this.id = cop.id;
         if (name!=null)
             this.name = name;
@@ -38,7 +45,7 @@ public class Product {
             this.category = category;
         else    
             this.category = cop.category;
-        if (withdrawn==true)
+        if (withdrawn!=null)
             this.withdrawn = withdrawn;
         else
             this.withdrawn = cop.withdrawn;
@@ -70,8 +77,10 @@ public class Product {
 
     public String getTags() {
         String res = "";
-        for(int i=0; i<this.tags.length;i++)
-            res = res + "," + tags[i];
+        for(int i=0; i<this.tags.length-1;i++)
+            res = res + tags[i] + ","  ;
+        if (tags.length>0)
+            res = res + tags[tags.length-1];
         return res;
     }
 

@@ -47,7 +47,7 @@ public class Seller {
         if (tags!=null)
             this.tags = tags.split(",");
         else
-            this.tags = null;
+            this.tags = cop.tags;
         if (withdrawn!=null)
             this.withdrawn = withdrawn;
         else
@@ -76,8 +76,9 @@ public class Seller {
 
     public String getTags() {
         String res = "";
-        for(int i=0; i<this.tags.length;i++)
-            res = res + "," + tags[i];
+        for(int i=0; i<this.tags.length-1;i++)
+        res = res + tags[i] + ","  ;
+        res = res + tags[tags.length-1];
         return res;
     }
 

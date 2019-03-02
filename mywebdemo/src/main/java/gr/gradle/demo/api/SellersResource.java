@@ -64,6 +64,43 @@ public class SellersResource extends ServerResource {
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
+      String idAttr = getAttribute("id");
+        Form form = new Form(entity);
+        String name = form.getFirstValue("name");
+        String address = form.getFirstValue("address");
+        String  str_Lng = form.getFirstValue("lng");
+        String str_Lat = form.getFirstValue("lat");
+        String tags = form.getFirstValue("tags");
+        String str_with = form.getFirstValue("withdrawn");
+        Map<String, Object> map = new HashMap<>();    
+        Boolean withdrawn;
+        //Read the parameters
+        //TODOne: Implement this DONE//
+        if (name==null || name.equals("") || address==null || address.equals("") 
+              || str_Lng==null || str_Lng.equals("") || str_Lat==null || str_Lat.equals("") ||
+              str_with==null || str_with.equals("") || tags==null || tags.equals("") )
+              throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Fill all the values"); 
+        //check withdrawn
+        if (!((str_with.equals("0") || str_with.equals("1") || str_with.equals("true") || str_with.equals("false"))))
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid withdrawn Values");
+          withdrawn = str_with.equals("1") || str_with.equals("true");
+        //check Lng,Lat
+        Double lng,lat;
+        try{
+            lng = Double.valueOf(str_Lng);
+            lat = Double.valueOf(str_Lat);
+        }catch(Exception e){
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lat,lng Values");
+        }
+        if (!(lng>-180 && lng<180 && lat>-90 && lat<90))
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lat,lng Values");
+
+        Seller seller = dataAccess.addSeller(name, address, lng, lat, tags, withdrawn);
+        //Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
+        map.put("Parking Lot",seller);
+        return new JsonMapRepresentation(map);
+    }
+    /*
       Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
       String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
@@ -95,5 +132,6 @@ public class SellersResource extends ServerResource {
         return new JsonMapRepresentation(map);
       }
     }
+  w*/
     
 }

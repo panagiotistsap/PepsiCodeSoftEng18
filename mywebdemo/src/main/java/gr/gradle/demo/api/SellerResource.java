@@ -28,21 +28,15 @@ public class SellerResource extends ServerResource {
         getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
         responseHeaders.add(new Header("Access-Control-Allow-Origin", "*"));
         responseHeaders.add(new Header("Access-Control-Allow-Methods", "POST,GET,OPTIONS,PATCH,DELETE"));
-
-
         return null;
     }
 
     @Override
     protected Representation get() throws ResourceException {
-
         String idAttr = getAttribute("id");
         System.out.println(idAttr);
-
-        if (idAttr == null) {
+        if (idAttr == null) 
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Missing seller id");
-        }
-
         Long id = null;
         try {
             id = Long.parseLong(idAttr);
@@ -74,7 +68,7 @@ public class SellerResource extends ServerResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid shop id: " + idAttr);
         }
         if (dataAccess.deleteShop(id,rights)==false)
-            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid shop id: " + idAttr); //elegxos gia to an to esvise h bash
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "no shop with id: " + idAttr); //elegxos gia to an to esvise h bash
         Map<String, Object> map = new HashMap<>();
         map.put("Message","OK");
         return new JsonMapRepresentation(map);
@@ -87,38 +81,52 @@ public class SellerResource extends ServerResource {
         int rights = dataAccess.isloggedin(token);
         if(rights==-1)
             throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
-            
+        
+        String idAttr = getAttribute("id");
+        if (idAttr==null)
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No id value");    
+        Form form = new Form(entity);
+        String name = form.getFirstValue("name");
+        String address = form.getFirstValue("address");
+        String  str_Lng = form.getFirstValue("lng");
+        String str_Lat = form.getFirstValue("lat");
+        String tags = form.getFirstValue("tags");
+        String str_with = form.getFirstValue("withdrawn");
+        Map<String, Object> map = new HashMap<>();    
+        Boolean withdrawn;
         //Read the parameters
         //TODOne: Implement this DONE//
+        if (name==null || name.equals("") || address==null || address.equals("") 
+              || str_Lng==null || str_Lng.equals("") || str_Lat==null || str_Lat.equals("") ||
+              str_with==null || str_with.equals("") || tags==null || tags.equals("") )
+              throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Fill all the values"); 
+        Long id = null;
         try{
-            String idAttr = getAttribute("id");
-            Form form = new Form(entity);
-            String name = form.getFirstValue("name");
-            String address = form.getFirstValue("address");
-            Double Ing = Double.valueOf(form.getFirstValue("Ing"));
-            Double Iat = Double.valueOf(form.getFirstValue("Iat"));
-            String tags = form.getFirstValue("tags");
-            Boolean withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
-            Map<String, Object> map = new HashMap<>();
-            //blepei an yparxoun valid stoixeia
-            if (name==null || name.equals("") || address==null || address.equals("") 
-              || Ing==null || Iat==null ) {
-            map.put("Message","Invalid Values");
-            return new JsonMapRepresentation(map);
-            }
             //tsekarei an to id einai int
-            Long id = null;
             id = Long.parseLong(idAttr);
-            Optional<Seller> opt = dataAccess.putShop(id,name,address,Ing,Iat,tags,withdrawn);
-            Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
-            map.put("Parking Lots",shop);
-            return new JsonMapRepresentation(map);
         }
         catch(Exception e){
-            Map<String, Object> map = new HashMap<>();
-            map.put("Message","Invalid Values");
-            return new JsonMapRepresentation(map);
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid id value");
         }
+        //check withdrawn
+        if (!((str_with.equals("0") || str_with.equals("1") || str_with.equals("true") || str_with.equals("false"))))
+          throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid withdrawn Values");
+          withdrawn = str_with.equals("1") || str_with.equals("true");
+        //check Lng,Lat
+        Double lng,lat;
+        try{
+            lng = Double.valueOf(str_Lng);
+            lat = Double.valueOf(str_Lat);
+        }catch(Exception e){
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lat,lng Values");
+        }
+        if (!(lng>-180 && lng<180 && lat>-90 && lat<90))
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lat,lng Values");
+
+        Optional<Seller> opt = dataAccess.putShop(id,name,address,lng,lat,tags,withdrawn);
+        Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
+        map.put("Parking Lots",shop);
+        return new JsonMapRepresentation(map);
     }
 
     @Override
@@ -131,46 +139,59 @@ public class SellerResource extends ServerResource {
             
         //Read the parameters
         //TODOne: Implement this DONE//
+        String idAttr = getAttribute("id");
+        if (idAttr==null)
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No id value");    
+        Form form = new Form(entity);
+        String name = form.getFirstValue("name");
+        String address = form.getFirstValue("address");
+        String str_lng = form.getFirstValue("lng");
+        String str_lat = form.getFirstValue("lat");
+        String str_with = form.getFirstValue("withdrawn");
+        String tags = form.getFirstValue("tags");
+        Double lng,lat; 
+        Boolean withdrawn;
+        //tsekarei an to id einai int
+        Long id = null;
         try{
-            String idAttr = getAttribute("id");
-            Form form = new Form(entity);
-            String name = form.getFirstValue("name");
-            String address = form.getFirstValue("address");
-            String str_ing = form.getFirstValue("Ing");
-            String str_iat = form.getFirstValue("Iat");
-            String str_with = form.getFirstValue("withdrawn");
-            String tags = form.getFirstValue("tags");
-            Double Ing,Iat; 
-            Boolean withdrawn;
-            Ing = null;
-            Iat = null;
-            withdrawn = null;
-            if (str_ing!=null)
-                Ing = Double.valueOf(form.getFirstValue("Ing"));
-            if (str_iat!=null)
-                Iat = Double.valueOf(form.getFirstValue("Iat"));
-            if (str_with!=null)
-                withdrawn = Boolean.valueOf(form.getFirstValue("withdrawn"));
-
-            Map<String, Object> map = new HashMap<>();
-            //blepei an yparxoun valid stoixeia
-            if (name.equals("") || address.equals("")) {
-            map.put("Message","Invalid Values");
-            return new JsonMapRepresentation(map);
-            }
-            //tsekarei an to id einai int
-            Long id = null;
             id = Long.parseLong(idAttr);
-            Optional<Seller> opt = dataAccess.patchShop(id,name,address,Ing,Iat,tags,withdrawn);
-            Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
-            map.put("Parking Lots",shop);
-            return new JsonMapRepresentation(map);
+        }catch(Exception e){
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Id value"); 
+        }
+        if ((name!=null  && name.equals("")) || (address!=null && address.equals("")) 
+        || (str_lng!=null && str_lng.equals("")) || (str_lat!=null && str_lat.equals("")) ||
+        (str_with!=null && str_with.equals("")) || (tags!=null && tags.equals("")))
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No empty values"); 
+        //check gia lng,lat
+        lng = null; lat = null;
+        try{
+            if (str_lng!=null)
+                lng = Double.valueOf(str_lng);
+            if (str_lat!=null)
+                lat = Double.valueOf(str_lat);
         }
         catch(Exception e){
-            Map<String, Object> map = new HashMap<>();
-            map.put("Message","Invalid Values");
-            return new JsonMapRepresentation(map);
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lat,lng values"); 
         }
-    }
+        System.out.println(lng);
+        System.out.println(lat);
+        if (lng!=null && (lng<-90 || lng>90))
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lng value");
+        if (lat!=null && (lat<-90 || lat>90))
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid lat value");
+        //check gia withdrawn
+        withdrawn = null;
+        if (str_with!=null){
+            if (!((str_with.equals("0") || str_with.equals("1") || str_with.equals("true") || str_with.equals("false"))))
+                throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid withdrawn Values");
+            withdrawn = str_with.equals("1") || str_with.equals("true");
+        }
+        Map<String, Object> map = new HashMap<>();
+        Optional<Seller> opt = dataAccess.patchShop(id,name,address,lng,lat,tags,withdrawn);
+        Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
+        map.put("Parking Lots",shop);
+        return new JsonMapRepresentation(map);
+        
+        }
     
 }

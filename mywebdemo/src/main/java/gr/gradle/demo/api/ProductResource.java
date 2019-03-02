@@ -143,7 +143,7 @@ public class ProductResource extends ServerResource {
     @Override
     protected Representation patch(Representation entity) throws ResourceException {
       //check if logged in
-     
+      ArrayList<String> inp = new ArrayList<String>();
       Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
       String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
       int rights = dataAccess.isloggedin(token);
@@ -157,6 +157,9 @@ public class ProductResource extends ServerResource {
       String category = form.getFirstValue("category");
       String str_with = form.getFirstValue("withdrawn");
       String tags = form.getFirstValue("tags");
+      inp.add(name); inp.add(desc); inp.add(category); inp.add(str_with); inp.add(str_with); inp.add(tags);
+      if (this.countnonulls(inp)<=0)
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
       Map<String, Object> map = new HashMap<>();
       Optional<Product> opt;
       Boolean withdrawn;
@@ -184,4 +187,16 @@ public class ProductResource extends ServerResource {
       return new JsonMapRepresentation(map);
     }
 
+    public Integer countnonulls(ArrayList<String> inp){
+      int sum=0;
+      for(int i=0;i<inp.size();i++){
+          if (inp.get(i)!=null)
+              sum++;
+      }
+      if (sum==0)
+          return -1;
+      if (sum==1)
+          return 1;
+      return 0;
+  }
 }

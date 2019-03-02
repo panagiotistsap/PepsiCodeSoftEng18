@@ -131,6 +131,7 @@ public class SellerResource extends ServerResource {
 
     @Override
     protected Representation patch(Representation entity) throws ResourceException{
+        ArrayList<String> inp = new ArrayList<String>();
         Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
         String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
@@ -144,11 +145,16 @@ public class SellerResource extends ServerResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No id value");    
         Form form = new Form(entity);
         String name = form.getFirstValue("name");
+        
         String address = form.getFirstValue("address");
         String str_lng = form.getFirstValue("lng");
         String str_lat = form.getFirstValue("lat");
         String str_with = form.getFirstValue("withdrawn");
         String tags = form.getFirstValue("tags");
+        inp.add(address); inp.add(str_lng); inp.add(str_lat); inp.add(str_lng); inp.add(str_with);
+        inp.add(tags);
+        if (this.countnonulls(inp)<=0)
+        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values"); 
         Double lng,lat; 
         Boolean withdrawn;
         //tsekarei an to id einai int
@@ -194,4 +200,19 @@ public class SellerResource extends ServerResource {
         
         }
     
-}
+
+
+    public Integer countnonulls(ArrayList<String> inp){
+        int sum=0;
+        for(int i=0;i<inp.size();i++){
+            if (inp.get(i)!=null)
+                sum++;
+        }
+        if (sum==0)
+            return -1;
+        if (sum==1)
+            return 1;
+        return 0;
+    }
+
+    }

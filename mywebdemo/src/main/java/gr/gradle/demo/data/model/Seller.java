@@ -77,8 +77,9 @@ public class Seller {
     public String getTags() {
         String res = "";
         for(int i=0; i<this.tags.length-1;i++)
-        res = res + tags[i] + ","  ;
-        res = res + tags[tags.length-1];
+            res = res + tags[i] + ","  ;
+        if (tags.length>0)
+            res = res + tags[tags.length-1];
         return res;
     }
 

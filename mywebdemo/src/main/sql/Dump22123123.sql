@@ -167,10 +167,8 @@ CREATE TABLE `sells` (
   `price` double(4,2) DEFAULT NULL,
   `datefrom` date DEFAULT NULL,
   `dateto` date DEFAULT NULL,
-  KEY `sellerid` (`sellerid`),
-  KEY `productid` (`productid`),
-  CONSTRAINT `sells_ibfk_1` FOREIGN KEY (`sellerid`) REFERENCES `parkinglots` (`id`),
-  CONSTRAINT `sells_ibfk_2` FOREIGN KEY (`productid`) REFERENCES `product` (`id`)
+  CONSTRAINT `sells_ibfk_1` FOREIGN KEY (`sellerid`) REFERENCES `parkinglots` (`id`) on delete cascade,
+  CONSTRAINT `sells_ibfk_2` FOREIGN KEY (`productid`) REFERENCES `product` (`id`) on delete cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

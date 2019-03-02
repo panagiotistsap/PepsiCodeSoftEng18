@@ -92,7 +92,7 @@ public class ProductsResource extends ServerResource {
       }
     }
 
-    /*
+    
     @Override
     protected Representation options(){
         Series responseHeaders;
@@ -103,6 +103,6 @@ public class ProductsResource extends ServerResource {
 
 
         return null;
-    }*/
+    }
 
 }

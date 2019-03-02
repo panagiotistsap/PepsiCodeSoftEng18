@@ -54,7 +54,7 @@ public class PricesResources extends ServerResource {
 		Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
 		String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
 		int rights = dataAccess.isloggedin(token);
-    if(rights==-1)
+    	if(rights==-1)
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");	
 		try{
 			Form form = new Form(entity);
@@ -77,9 +77,9 @@ public class PricesResources extends ServerResource {
 			Price final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
 			return new JsonPriceRepresentation(final_price);
 			}catch(Exception e){
-				System.out.println("ERROR");
+				System.out.println(e);
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
-		}
+			}
 	}
 
 	@Override

@@ -73,7 +73,7 @@ public class SellersResource extends ServerResource {
         String tags = form.getFirstValue("tags");
         String str_with = form.getFirstValue("withdrawn");
         Map<String, Object> map = new HashMap<>();    
-        Boolean withdrawn;
+        Boolean withdrawn = false;
         //Read the parameters
         //TODOne: Implement this DONE//
         if (name==null || name.equals("") || address==null || address.equals("") 

@@ -62,7 +62,7 @@ public class DataAccess {
         else if (status.equals("WITHDRAWN"))
             stat="where withdrawn=true";
         else
-        throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid status Values");
+            throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid status Values");
 
         if (sort==null || sort.equals("id|DESC")) srt="order by id desc";
         else if (sort.equals("id|ASC")) srt="order by id";
@@ -132,6 +132,7 @@ public class DataAccess {
     public Optional<Product> putProduct(Long id,String name,String description,Boolean withdrawn,String tags,String category ){
         Optional<Product> pro = getProduct(id);
         Product product = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + id));
+        System.out.println(withdrawn);
         Product pro2 = new Product(id,name,description,category,withdrawn,tags);
         jdbcTemplate.update("update product set name=?,description=?,withdrawn=?,tags=?,category=? where id=?",pro2.getName(),pro2.getDescription(),pro2.isWithdrawn(),pro2.getTags(),pro2.getCategory(),id);
         return Optional.of(pro2);

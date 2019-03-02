@@ -21,13 +21,14 @@ public class ProductsResource extends ServerResource {
     
     @Override
     protected Representation get() throws ResourceException {
+      List<Product> products;
+      Map<String, Object> map = new HashMap<>();
+      int start,count;
+      String str_count = getQueryValue("count");
+      String str_start = getQueryValue("start");
+      String sort = getQueryValue("sort");
+      String status = getQueryValue("status");
       try{
-        int start,count;
-        String str_count = getQueryValue("count");
-        String str_start = getQueryValue("start");
-        String sort = getQueryValue("sort");
-        String status = getQueryValue("status");
-        System.out.println(sort);
         if (str_count == null)
           count = 20;
         else
@@ -36,31 +37,32 @@ public class ProductsResource extends ServerResource {
           start = 0;
         else
           start = Integer.parseInt(str_start);
-        
-        List<Product> products = dataAccess.getProducts(new Limits(start, count),sort,status);
-        Map<String, Object> map = new HashMap<>();
-        map.put("start", start);
-        map.put("count", count);
-        if (products == null)
-          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "No products available");
-        map.put("total", products.size());
-        map.put("products", products);
-
-        return new JsonMapRepresentation(map);
+        products = dataAccess.getProducts(new Limits(start, count),sort,status);
       }catch(Exception e){
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
       }
+      if (products==null)
+        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "no products available"); 
+      map.put("start", start);
+      map.put("count", count);
+        
+      map.put("total", products.size());
+      map.put("products", products);
+
+        return new JsonMapRepresentation(map);
     }
+    
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
-      try{
+      
         Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");
         String token = headers.getFirstValue("X-OBSERVATORY-AUTH");
         int rights = dataAccess.isloggedin(token);
         if(rights==-1)
           throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");
         //Create a new restlet form
+      try{
         Form form = new Form(entity);
         //Read the parameters
         String name = form.getFirstValue("name");
@@ -81,7 +83,8 @@ public class ProductsResource extends ServerResource {
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
       }
     }
-    
+
+    /*
     @Override
     protected Representation options(){
         Series responseHeaders;
@@ -92,5 +95,6 @@ public class ProductsResource extends ServerResource {
 
 
         return null;
-    }
+    }*/
+    
 }

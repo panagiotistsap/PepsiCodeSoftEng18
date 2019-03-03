@@ -19,9 +19,10 @@ public class ResultRowMapper implements RowMapper {
         String shopName    = rs.getString("parkinglots.name");
         String shopTags    = rs.getString("parkinglots.tags");
         String shopAddress = rs.getString("parkinglots.address");
-        String mydate        = rs.getString("selected_date");
+        String mydate      = rs.getString("selected_date");
+        Integer sd          = Double.valueOf(rs.getDouble("geodist")).intValue();
 
-        return new Result(price,mydate,productName,shopId,productId,productTags,shopTags,shopAddress,shopName);
+        return new Result(price,mydate,productName,shopId,productId,productTags,shopTags,shopAddress,shopName,sd);
     }
 
 }

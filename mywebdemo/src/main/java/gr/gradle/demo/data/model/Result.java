@@ -13,9 +13,11 @@ public class Result {
     private final String shopTags;
     private final String shopAddress;    
     private final String shopName;
+    private final Integer shopDist;
+    
     
     public Result(Double price, String mydate, String product_name, Long shopid, Long productsid, String pr_tags, String sh_tags,
-        String address, String sh_name ){
+        String address, String sh_name ,Integer sd){
     	this.price = price;
     	this.shopId = shopid;
         this.productId = productsid;
@@ -25,6 +27,7 @@ public class Result {
         this.shopTags = sh_tags;
         this.shopAddress = address;
         this.shopName = sh_name;
+        this.shopDist = sd;
 
     }
 

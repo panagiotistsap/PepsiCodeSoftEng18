@@ -198,7 +198,7 @@ public class SellerResource extends ServerResource {
         map.put("Parking Lots",shop);
         return new JsonMapRepresentation(map);
         
-        }
+    }
     
 
 

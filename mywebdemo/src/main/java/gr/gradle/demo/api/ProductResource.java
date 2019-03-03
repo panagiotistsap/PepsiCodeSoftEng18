@@ -171,8 +171,8 @@ public class ProductResource extends ServerResource {
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid id value");
       }
       //check if values are valid
-      if (idAttr==null || (name !=null && name.equals("")) || (category!=null && category.equals("")) || (desc!=null || desc.equals(""))
-        || (tags==null || tags.equals(""))) 
+      if (idAttr==null || (name !=null && name.equals("")) || (category!=null && category.equals("")) || (desc!=null && desc.equals(""))
+        || (tags!=null && tags.equals(""))) 
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
       
       if (str_with==null)

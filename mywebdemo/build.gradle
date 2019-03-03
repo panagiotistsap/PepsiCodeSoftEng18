@@ -48,6 +48,6 @@ gretty {
     httpsEnabled = true
     httpPort = 8765
     httpsPort = 8765
-    contextPath = 'app'
+    contextPath = ''
     //servletContainer = 'tomcat8' //use the default (jetty)
 }

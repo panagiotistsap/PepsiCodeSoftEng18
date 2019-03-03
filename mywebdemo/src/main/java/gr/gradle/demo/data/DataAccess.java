@@ -169,9 +169,9 @@ public class DataAccess {
         int start = (int)limits.getStart();
         int count = limits.getCount();
         String stat,srt;
-        if (status==null || status.equals("ALL")) stat="";
+        if (status==null || status.equals("ACTIVE")) stat="where withdrawn=0";
         else if (status.equals("WITHDRAWN")) stat="where withdrawn=1";
-        else if (status.equals("ACTIVE")) stat="where withdrawn=0";
+        else if (status.equals("ALL")) stat="";
         else throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid status Values");
 
         if (sort==null || sort.equals("name|DESC")) srt="order by name desc";
@@ -182,7 +182,7 @@ public class DataAccess {
 
         List<Seller> helping =  jdbcTemplate.query("select * from parkinglots " + stat +" "+ srt, EMPTY_ARGS, new SellerRowMapper());
         if (start>helping.size() || helping.size()==0){
-            System.out.println("mpika edw");
+            //System.out.println("mpika edw");
             return null;
         }
         if (count>helping.size())

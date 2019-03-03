@@ -373,7 +373,7 @@ public class DataAccess {
         jdbcTemplate.update("update sells set dateto=? - interval 1 day where (dateto between ? and ?) and sellerid=? and productid=?",
         date_from,date_from,date_to,l_shopid,l_productid);
         jdbcTemplate.update("update sells set datefrom=? + interval 1 day where (dateto between ? and ?) and sellerid=? and productid=?",
-        date_to,date_from,date_to);
+        date_to,date_from,date_to,l_shopid,l_productid);
         //  throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop or Product not found ");
         PreparedStatementCreator psc = new PreparedStatementCreator() {
             @Override

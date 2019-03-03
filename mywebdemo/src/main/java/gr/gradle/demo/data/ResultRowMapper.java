@@ -14,14 +14,14 @@ public class ResultRowMapper implements RowMapper {
         Double price       = rs.getDouble("sells.price");
         String productName = rs.getString("product.name");
         long productId     = rs.getLong("product.id");
-        String productTags   = rs.getString("product.tags");
+        String productTags = rs.getString("product.tags");
         long shopId        = rs.getLong("parkinglots.id");
         String shopName    = rs.getString("parkinglots.name");
         String shopTags    = rs.getString("parkinglots.tags");
         String shopAddress = rs.getString("parkinglots.address");
-        
+        String mydate        = rs.getString("selected_date");
 
-        return new Result(price,null,productName,shopId,productId,productTags,shopTags,shopAddress);
+        return new Result(price,mydate,productName,shopId,productId,productTags,shopTags,shopAddress);
     }
 
 }

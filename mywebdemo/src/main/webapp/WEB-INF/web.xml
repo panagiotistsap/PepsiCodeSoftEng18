@@ -30,6 +30,11 @@
     </servlet>
 
     <servlet>
+      <servlet-name>SignupController</servlet-name>
+      <servlet-class>gr.gradle.demo.SignupController</servlet-class>
+    </servlet>
+
+    <servlet>
       <servlet-name>LogoutController</servlet-name>
       <servlet-class>gr.gradle.demo.LogoutController</servlet-class>
     </servlet>
@@ -75,7 +80,10 @@
         <url-pattern>/logout</url-pattern>
     </servlet-mapping>
 
-
+    <servlet-mapping>
+        <servlet-name>SignupController</servlet-name>
+        <url-pattern>/signup</url-pattern>
+    </servlet-mapping>
     <!--
     <servlet-mapping>
         <servlet-name>default</servlet-name>

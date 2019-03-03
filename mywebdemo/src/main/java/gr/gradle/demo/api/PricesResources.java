@@ -56,62 +56,75 @@ public class PricesResources extends ServerResource {
 		int rights = dataAccess.isloggedin(token);
     	if(rights==-1)
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");	
-		try{
-			Form form = new Form(entity);
-			System.out.println("gamw");
-			String productid = form.getFirstValue("productId");
-			String shopid = form.getFirstValue("shopId");
-			String date_from = form.getFirstValue("dateFrom");
-			String date_to = form.getFirstValue("dateTo");
-			String price = form.getFirstValue("price");
-			System.out.println(date_to);
-			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-			if (!(this.isValidDate(date_to) && this.isValidDate(date_from)))
-				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
-			
-			//System.out.println("ftanw");
-			Double d_price = Double.parseDouble(price);
-			Long l_shopid = Long.parseLong(shopid);
-			Long l_productid = Long.parseLong(productid);
-			System.out.println("ftanw2");
-			Price final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
-			return new JsonPriceRepresentation(final_price);
-			}catch(Exception e){
-				System.out.println(e);
-				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
+		Form form = new Form(entity);
+		String productid = form.getFirstValue("productId");
+		String shopid = form.getFirstValue("shopId");
+		String date_from = form.getFirstValue("dateFrom");
+		String date_to = form.getFirstValue("dateTo");
+		String price = form.getFirstValue("price");
+		Double d_price; 
+		Long   l_shopid,l_productid; 
+		Price  final_price;
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		if (!(this.isValidDate(date_to) && this.isValidDate(date_from)) )
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
+		else {
+			Date date1=null;
+			Date date2=null;
+			try {
+				date1 = format.parse(date_from);
+				date2 = format.parse(date_to);
 			}
+			catch(ParseException e){
+				System.out.println(e);
+			}
+			if (date2.before(date1))
+				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Date from < Date to");
+		}
+		try{
+			d_price = Double.parseDouble(price);
+			l_shopid = Long.parseLong(shopid);
+			l_productid = Long.parseLong(productid);
+		}catch(Exception e){
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
+		}
+		final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
+		return new JsonPriceRepresentation(final_price);
 	}
 
 	@Override
 	protected Representation get() throws ResourceException {
-
-		
-
+		int start,count,i,j;
+		String str_count = getQueryValue("count");
+		String str_start = getQueryValue("start");
+		String status = getQueryValue("status");
+		String str_geodist = getQueryValue("geoDist");
+		String str_Lng = getQueryValue("geoLng");
+		String str_Lat = getQueryValue("geoLat");
+		String str_dateFrom = getQueryValue("dateFrom");
+		String str_dateTo = getQueryValue("dateTo");
+		String str_shops = getQueryValue("shops");
+		String str_products = getQueryValue("products");
+		String str_tags = getQueryValue("tags");
+		String sort = getQueryValue("sort");
 		try{
-			int start,count,i,j;
-			String str_count = getQueryValue("count");
-			String str_start = getQueryValue("start");
-			String status = getQueryValue("status");
-			String str_geodist = getQueryValue("geoDist");
-			String str_Lng = getQueryValue("geoLng");
-			String str_Lat = getQueryValue("geoLat");
-			String str_dateFrom = getQueryValue("dateFrom");
-			String str_dateTo = getQueryValue("dateTo");
-			String str_shops = getQueryValue("shops");
-			String str_products = getQueryValue("products");
-			String str_tags = getQueryValue("tags");
-			String sort = getQueryValue("sort");
-			
 			//count check
 			if (str_count == null)
 				count = 20;
 			else
 				count = Integer.parseInt(str_count);
+		}catch(Exception e){
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong count value");
+		}
+		try{
 			//start check
 			if (str_start==null)
 				start = 0;
 			else
 				start = Integer.parseInt(str_start);
+		}catch(Exception e){
+			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong start value");
+		}
 			//sort check
 			String[] sort_list;
 			if (sort==null){
@@ -141,18 +154,38 @@ public class PricesResources extends ServerResource {
 			if (!((str_Lng==null && str_Lat==null && str_geodist==null) ||(str_Lng!=null && str_Lat!=null && str_geodist!=null)))
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Need all of geo infos or none");
 			else if(str_Lng!=null){
-				
-				geoDist = Integer.parseInt(str_geodist);
-				Lng = Double.parseDouble(str_Lng);
-				Lat = Double.parseDouble(str_Lat);
+				try{
+					geoDist = Integer.parseInt(str_geodist);
+					Lng = Double.parseDouble(str_Lng);
+					Lat = Double.parseDouble(str_Lat);
+				}catch(Exception e){
+					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong geo values");
+				}
 			}
 			System.out.println("ftanw2");
 			//check dates
+			Date date1=null;
+			Date date2=null;
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			format.setLenient(false);
 			if (!((str_dateFrom==null && str_dateTo==null) || (str_dateFrom!=null || str_dateTo!=null)))
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Need all of date infos or none");
 			else if(str_dateFrom!=null){
-				if(!str_dateFrom.matches("\\d{4}-\\d{2}-\\d{2}") || !str_dateTo.matches("\\d{4}-\\d{2}-\\d{2}"))
+				if(!isValidDate(str_dateFrom) || !isValidDate(str_dateTo))
 					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
+				try{
+					date1=format.parse(str_dateFrom);
+					date2=format.parse(str_dateTo);
+					if (date2.before(date1))
+						throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Date from < Date to");
+				}catch(Exception e){
+					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid dates");
+				}
+			}
+			else{
+				Calendar calendar = Calendar.getInstance();
+				str_dateFrom = format.format(calendar.getTime());
+				str_dateTo   = format.format(calendar.getTime());
 			}
 			System.out.println("ftanw3");
 			//check shops
@@ -214,6 +247,7 @@ public class PricesResources extends ServerResource {
 			if (results.size()==0){
 				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Not found");
 			}
+		try{
 			HashMap<Double, List<Result>> price_map = new HashMap<>();
 			Double price_help; List<Result> help_list;
 			for(i = 0;i <results.size();i++){
@@ -233,6 +267,7 @@ public class PricesResources extends ServerResource {
 			//return null;
 			
 			return new JsonMapRepresentation(map);
+		
 		}catch(Exception e){
 			System.out.println(e);
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values eksoterika");
@@ -242,13 +277,14 @@ public class PricesResources extends ServerResource {
 
 	boolean isValidDate(String input) {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		format.setLenient(false);
 		try {
-			  format.parse(input);
-				return true;
+			System.out.println(format.parse(input));
+			return true;
 		}
 		catch(ParseException e){
-				 return false;
+			return false;
 		}
-}
+	}
 
 }

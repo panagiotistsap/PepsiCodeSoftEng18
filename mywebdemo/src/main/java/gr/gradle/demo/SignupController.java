@@ -13,7 +13,7 @@ import java.math.BigInteger;
  * Servlet implementation class LoginController
  */
 
-public class LoginController extends HttpServlet {
+public class SignupController extends HttpServlet {
 	
 	private final DataAccess dataAccess = Configuration.getInstance().getDataAccess();
 
@@ -22,26 +22,41 @@ public class LoginController extends HttpServlet {
 		response.addHeader("Access-Control-Allow-Methods", "POST,GET,DELETE,PUT,PATCH,OPTIONS");
 
 		String un = request.getParameter("username");
-		String pw = request.getParameter("password");
-		String plaintext = this.createToken();
+        String plaintext = request.getParameter("password");
+        String pw2 = request.getParameter("password2");
+        String SS="";
+        Boolean res=true;
+        if (un==null || plaintext==null || pw2==null){
+            res = false; SS = "fill all values";
+        }
+        if ( res && !plaintext.equals(pw2)){
+            res = false; SS = "passwords dont match";
+        }
+        if (res && !dataAccess.ch_un_avl(un)){
+            res = false; SS = "username not available";
+        }
+        if (!res){
+            request.setAttribute("name",SS);
+            request.getRequestDispatcher("response.jsp").forward(request, response);
+        }
 		//encrypt
 		MessageDigest m;
 		try{
-		m = MessageDigest.getInstance("MD5");
-		m.reset();
-		m.update(plaintext.getBytes());
-		byte[] digest = m.digest();
-		//Decoding
-		BigInteger bigInt = new BigInteger(1,digest);
-		String hashtext = bigInt.toString(16);
-		while(hashtext.length() < 32 ){
-			hashtext = "0"+hashtext;
-		}
+            m = MessageDigest.getInstance("MD5");
+            m.reset();
+            m.update(plaintext.getBytes());
+            byte[] digest = m.digest();
+            //Decoding
+            BigInteger bigInt = new BigInteger(1,digest);
+            String hashtext = bigInt.toString(16);
+            while(hashtext.length() < 32 ){
+                hashtext = "0"+hashtext;
+            }
 		//end decrypt
-		if (dataAccess.login(un, pw, hashtext))
-			request.setAttribute("name",plaintext);
+		if (dataAccess.signup(un, hashtext))
+			request.setAttribute("name","Success");
 		else 
-			request.setAttribute("name", "denied");
+			request.setAttribute("name","Sign up Failed" );
 		request.getRequestDispatcher("response.jsp").forward(request, response);
 		return;
 		}catch(Exception e){

@@ -1,5 +1,6 @@
 package gr.gradle.demo.data;
-
+import java.security.MessageDigest;
+import java.math.BigInteger;
 
 import gr.gradle.demo.data.model.Product;
 import gr.gradle.demo.data.model.Seller;
@@ -238,29 +239,50 @@ public class DataAccess {
         }
     }
     
-    public Boolean login(String username,String password,String token){
-        try {
+    public Boolean login(String username,String plaintext,String token){
+        try{
+            MessageDigest m = MessageDigest.getInstance("MD5");
+            m.reset();
+            m.update(plaintext.getBytes());
+            byte[] digest = m.digest();
+            //Decoding
+            BigInteger bigInt = new BigInteger(1,digest);
+            String password = bigInt.toString(16);
+            while(password.length()<32)
+                password = "0"+password;
+            
             Class.forName("com.mysql.jdbc.Driver");
             Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
-            PreparedStatement ps = c.prepareStatement("select admin from users where username=? and password=?");
+            PreparedStatement ps = c.prepareStatement("select admin,id from users where username=? and password=?");
             ps.setString(1, username);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();
             while (rs.next()){
                 String admin = Integer.toString(rs.getInt("admin"));
-                jdbcTemplate.update("insert into logged (token,admin) values (?,?)",token,Integer.parseInt(admin));
+                String his_id = Integer.toString(rs.getInt("id"));
+                jdbcTemplate.update("insert into logged (token,admin,user_id) values (?,?,?)",token,Integer.parseInt(admin),Integer.parseInt(his_id));
                 return true;
             }
             return false;
-        }catch (ClassNotFoundException | SQLException e) {
+        }catch (Exception e) {
+            System.out.println(e);
             return false;
             
             
 		}
     }
 
-    public Boolean logout(String token){
+    public Boolean logout(String plaintext){
         try {
+            MessageDigest m = MessageDigest.getInstance("MD5");
+            m.reset();
+            m.update(plaintext.getBytes());
+            byte[] digest = m.digest();
+            //Decoding
+            BigInteger bigInt = new BigInteger(1,digest);
+            String token = bigInt.toString(16);
+            while(token.length()<32)
+                token = "0"+token;
             Class.forName("com.mysql.jdbc.Driver");
             Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
             PreparedStatement ps = c.prepareStatement("select admin from logged where token=?");
@@ -272,17 +294,27 @@ public class DataAccess {
                 return true;
             }
             return false;
-        }catch (ClassNotFoundException | SQLException e) {
+        }catch (Exception e) {
             return false;
             
             
 		}
     }  
 
-    public int isloggedin(String token){
-        if (token==null)
+    public int isloggedin(String plaintext){
+        if (plaintext==null)
             return -1;
         try {
+            MessageDigest m = MessageDigest.getInstance("MD5");
+            m.reset();
+            m.update(plaintext.getBytes());
+            byte[] digest = m.digest();
+            //Decoding
+            BigInteger bigInt = new BigInteger(1,digest);
+            String token = bigInt.toString(16);
+            while(token.length() < 32 )
+                token = "0"+token;
+            
             Class.forName("com.mysql.jdbc.Driver");
             Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
             PreparedStatement ps = c.prepareStatement("select admin from logged where token=?");
@@ -293,7 +325,7 @@ public class DataAccess {
             }
             return -1;
         }
-        catch (ClassNotFoundException | SQLException e) {
+        catch (Exception e) {
             return -1;
         }
     }
@@ -387,12 +419,17 @@ public class DataAccess {
         order_string = order_string + parts[0] + " " + parts[1];
         //System.out.println(order_string);
         //dates
-        String mysql_date="";
-        if (datefrom!=null && dateto!=null){
+        String mysql_date1="(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from"+
+       "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,"+
+        "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,"+
+        "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,"+
+        "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,"+
+        "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v";
+        String mysql_date2="selected_date between greatest(sells.datefrom,'"+datefrom+"') and least(sells.dateto,'"+dateto+"') and";
+        /*if (datefrom!=null && dateto!=null){
             mysql_date="and sells.datefrom between '" + datefrom + "' and '"+dateto+"' ";
             mysql_date = mysql_date + "and sells.dateto between '" + datefrom + "' and '"+dateto+"' ";
-        }
-        System.out.println(mysql_date);
+        }*/
         //shop ids
         String mysql_shops="";
         if (shopsid!=null){
@@ -430,16 +467,16 @@ public class DataAccess {
         System.out.println(order_string);
         System.out.println(mysql_prods);
         System.out.println(mysql_shops);
-        System.out.println(mysql_date);
+        
 
             System.out.println("select sells.price,product.name,product.id,product.tags"+
-            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address "+
-            "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
-            mysql_prods+" "+mysql_shops+" "+mysql_date+" "+order_string);
+            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,selected_date"+geostring1+" "+
+            "from "+mysql_date1+",product,parkinglots,sells where "+mysql_date2+" sells.sellerid=parkinglots.id and sells.productid=product.id " + 
+            mysql_prods+" "+mysql_shops+" "+geostring2+order_string);
         List<Result> helping =  jdbcTemplate.query("select sells.price,product.name,product.id,product.tags"+
-                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address"+geostring1+" "+
-                                            "from product,parkinglots,sells where sells.sellerid=parkinglots.id and sells.productid=product.id " + 
-                                            mysql_prods+" "+mysql_shops+" "+mysql_date+" "+geostring2+order_string, EMPTY_ARGS, new ResultRowMapper());
+                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,selected_date"+geostring1+" "+
+                                            "from "+mysql_date1+",product,parkinglots,sells where "+mysql_date2+" sells.sellerid=parkinglots.id and sells.productid=product.id " + 
+                                            mysql_prods+" "+mysql_shops+" "+geostring2+order_string, EMPTY_ARGS, new ResultRowMapper());
         
         if (count>helping.size())
            return helping.subList(start,helping.size());
@@ -447,4 +484,43 @@ public class DataAccess {
         
         
     }
+
+    public Boolean ch_un_avl(String new_username){
+        try{
+        Class.forName("com.mysql.jdbc.Driver");
+        Connection c = DriverManager.getConnection("jdbc:mysql://localhost:3306/softeng", "myuser", "pass"); // gets a new connection
+        PreparedStatement ps = c.prepareStatement("select * from users where username=?");
+        ps.setString(1, new_username);
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()){
+            return false;
+        }
+        return true;
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    public Boolean signup(String un,String pas){
+        PreparedStatementCreator psc = new PreparedStatementCreator() {
+            @Override
+            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
+                PreparedStatement ps = con.prepareStatement(
+                        "insert into users (username,password,admin) values (?,?,0)",
+                        Statement.RETURN_GENERATED_KEYS
+                );
+                ps.setString(1, un);
+                ps.setString(2, pas);
+                return ps;
+            }
+        };
+        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+        int cnt = jdbcTemplate.update(psc, keyHolder);
+        if (cnt == 1)
+            return true;
+        else
+            return false;
+        
+    }
+    
 }

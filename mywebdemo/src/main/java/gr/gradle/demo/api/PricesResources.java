@@ -90,6 +90,7 @@ public class PricesResources extends ServerResource {
 		}catch(Exception e){
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
 		}
+
 		final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
 		return new JsonPriceRepresentation(final_price);
 	}
@@ -153,7 +154,7 @@ public class PricesResources extends ServerResource {
 			geoDist=0;
 			
 			System.out.println(str_Lng);
-			if (!((str_Lng==null && str_Lat==null && str_geodist==null) ||(str_Lng!=null && str_Lat!=null && str_geodist!=null)))
+			if (!((str_Lng==null && str_Lat==null && str_geodist==null) || (str_Lng!=null && str_Lat!=null && str_geodist!=null)))
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Need all of geo infos or none");
 			else if(str_Lng!=null){
 				try{

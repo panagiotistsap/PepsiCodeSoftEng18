@@ -368,8 +368,12 @@ public class DataAccess {
         Optional<Product> pro = getProduct(l_productid);
         Seller seller = sel.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Seller not found - id: " + l_shopid));
         Product prod = pro.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + l_productid));
-        jdbcTemplate.update("delete from sells where (datefrom between ? and ? ) and (dateto between ? and ?)",date_from,date_to,date_from,date_to);
-        jdbcTemplate.update("update sells set dateto=? - interval 1 day where dateto between ? and ?",date_from,date_from,date_to);
+        jdbcTemplate.update("delete from sells where (datefrom between ? and ? ) and (dateto between ? and ?) and sellerid=? and productid=?",
+        date_from,date_to,date_from,date_to,l_shopid,l_productid);
+        jdbcTemplate.update("update sells set dateto=? - interval 1 day where (dateto between ? and ?) and sellerid=? and productid=?",
+        date_from,date_from,date_to,l_shopid,l_productid);
+        jdbcTemplate.update("update sells set datefrom=? + interval 1 day where (dateto between ? and ?) and sellerid=? and productid=?",
+        date_to,date_from,date_to);
         //  throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop or Product not found ");
         PreparedStatementCreator psc = new PreparedStatementCreator() {
             @Override

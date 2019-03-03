@@ -22,6 +22,10 @@ public class RestfulApp extends Application {
 
         router.attach("/prices" , PricesResources.class);
 
+        router.attach("/login", LoginControl.class);
+         
+        //router.attach("/logout", LogoutControl.class);
+
         return router;
     }
 

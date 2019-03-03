@@ -69,6 +69,7 @@ public class ProductsResource extends ServerResource {
         String category = form.getFirstValue("category");
         String str_with  = form.getFirstValue("withdrawn");
         String tags = form.getFirstValue("tags");
+        System.out.println(tags);
         Map<String, Object> map = new HashMap<>();
         if (name==null || category==null || name.equals("") || category.equals("")
           || description==null || description.equals("") || tags==null || tags.equals(""))
@@ -85,8 +86,8 @@ public class ProductsResource extends ServerResource {
         //validate the values (in the general case)
         try{
         Product product = dataAccess.addProduct(name, description, category, withdrawn, tags);
-        map.put("new product",product);
-        return new JsonMapRepresentation(map);
+        //map.put("new product",product);
+        return new JsonProductRepresentation(product);
       }catch(Exception e){
         System.out.println("Error");
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");

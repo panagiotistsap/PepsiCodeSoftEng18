@@ -97,8 +97,8 @@ public class SellersResource extends ServerResource {
 
       Seller seller = dataAccess.addSeller(name, address, lng, lat, tags, withdrawn);
       //Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
-      map.put("Parking Lot",seller);
-      return new JsonMapRepresentation(map);
+      //map.put("Parking Lot",seller);
+      return new JsonSellerRepresentation(seller);
     }
     /*
       Series headers = (Series) getRequestAttributes().get("org.restlet.http.headers");

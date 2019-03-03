@@ -137,8 +137,8 @@ public class ProductResource extends ServerResource {
       }
       opt = dataAccess.putProduct(id,name,desc,withdrawn,tags,category);
       Product product = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
-      map.put("Product",product);
-      return new JsonMapRepresentation(map);
+      //map.put("Product",product);
+      return new JsonProductRepresentation(product);
     }
 
     @Override
@@ -189,8 +189,8 @@ public class ProductResource extends ServerResource {
       //check if id is integer
       opt = dataAccess.patchProduct(id,name,desc,withdrawn,tags,category);
       Product product = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Product not found - id: " + idAttr));
-      map.put("Product",product);
-      return new JsonMapRepresentation(map);
+      //map.put("Product",product);
+      return new JsonProductRepresentation(product);
     }
 
     public Integer countnonulls(ArrayList<String> inp){

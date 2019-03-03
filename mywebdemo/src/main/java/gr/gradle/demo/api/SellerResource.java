@@ -125,8 +125,8 @@ public class SellerResource extends ServerResource {
 
         Optional<Seller> opt = dataAccess.putShop(id,name,address,lng,lat,tags,withdrawn);
         Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
-        map.put("Parking Lots",shop);
-        return new JsonMapRepresentation(map);
+        //map.put("Parking Lots",shop);
+        return new JsonSellerRepresentation(shop);
     }
 
     @Override
@@ -194,8 +194,8 @@ public class SellerResource extends ServerResource {
         Map<String, Object> map = new HashMap<>();
         Optional<Seller> opt = dataAccess.patchShop(id,name,address,lng,lat,tags,withdrawn);
         Seller shop = opt.orElseThrow(() -> new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shop not found - id: " + idAttr));
-        map.put("Parking Lots",shop);
-        return new JsonMapRepresentation(map);
+        //map.put("Parking Lots",shop);
+        return new JsonSellerRepresentation(shop);
         
     }
     

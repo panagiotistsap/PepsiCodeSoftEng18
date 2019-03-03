@@ -53,6 +53,7 @@ public class SignupController extends HttpServlet {
                 hashtext = "0"+hashtext;
             }
 		//end decrypt
+		System.out.println("kai edw");
 		if (dataAccess.signup(un, hashtext))
 			request.setAttribute("name","Success");
 		else 

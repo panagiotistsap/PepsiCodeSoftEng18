@@ -421,12 +421,12 @@ public class DataAccess {
             String[] parts = sort_list[i].split("\\|");
             if (parts[0].equals("geo.dist"))
                 parts[0]="geodist";
-            if (parts[0].equals("price"))
-                continue;
-            order_string = order_string + parts[0] + " "+parts[1]+", ";   
+            System.out.println(parts[0]);
+            if (!(parts[0].equals("price")))
+                order_string = order_string + parts[0] + " "+parts[1]+", ";   
         }
-        String[] parts = sort_list[sort_list.length-1].split("\\|");
-        order_string = order_string + parts[0] + " " + parts[1];
+        System.out.println(order_string);
+        
         //System.out.println(order_string);
         //dates
         String mysql_date1="(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from"+

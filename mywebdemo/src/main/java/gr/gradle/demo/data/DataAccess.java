@@ -414,7 +414,8 @@ public class DataAccess {
         int start = (int)limits.getStart();
         int count = limits.getCount();
         String stat,srt;
-        
+        System.out.println("gamw");
+        System.out.println(sort_list.length);
         //sort
         String order_string = "";
         for(i=0;i<sort_list.length-1;i++){
@@ -422,20 +423,30 @@ public class DataAccess {
             if (parts[0].equals("geo.dist"))
                 parts[0]="geodist";
             System.out.println(parts[0]);
-            if (!(parts[0].equals("price")))
+            if (!(parts[0].equals("price")) && !(Lng==null && parts[0].equals("geodist")))
                 order_string = order_string + parts[0] + " "+parts[1]+", ";   
         }
         System.out.println(order_string);
-        
-        //System.out.println(order_string);
+        i = sort_list.length-1;
+        String[] parts = sort_list[i].split("\\|");
+        if (parts[0].equals("geo.dist"))
+            parts[0]="geodist";
+        System.out.println(parts[0]);
+        if (!(parts[0].equals("price")) && !(Lng==null && parts[0].equals("geodist"))){
+            System.out.println("hello");
+        }
+            order_string = order_string + parts[0] + " "+parts[1];   
+        if (!(order_string.equals("")))
+            order_string = " order by " + order_string;
+        System.out.println(order_string);
         //dates
-        String mysql_date1="(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from"+
+        String mysql_date1="(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v";
-        String mysql_date2="selected_date between greatest(sells.datefrom,'"+datefrom+"') and least(sells.dateto,'"+dateto+"') and";
+        String mysql_date2="date between greatest(sells.datefrom,'"+datefrom+"') and least(sells.dateto,'"+dateto+"') and";
         /*
             if (datefrom!=null && dateto!=null){
                 mysql_date="and sells.datefrom between '" + datefrom + "' and '"+dateto+"' ";
@@ -462,6 +473,8 @@ public class DataAccess {
         }
         if (!mysql_prods.equals(""))
             mysql_prods="and "+mysql_prods;
+        System.out.println("geodist:");
+        System.out.println(geoDist);
         String geostring1="";
         String geostring2="";
         if (geoDist!=0){
@@ -481,18 +494,20 @@ public class DataAccess {
         
 
             System.out.println("select sells.price,product.name,product.id,product.tags"+
-            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,selected_date"+geostring1+" "+
+            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,date"+geostring1+" "+
             "from "+mysql_date1+",product,parkinglots,sells where "+mysql_date2+" sells.sellerid=parkinglots.id and sells.productid=product.id " + 
             mysql_prods+" "+mysql_shops+" "+geostring2+order_string);
+        
         List<Result> helping =  jdbcTemplate.query("select sells.price,product.name,product.id,product.tags"+
-                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,selected_date"+geostring1+" "+
+                                            ",parkinglots.id,parkinglots.name,parkinglots.tags,parkinglots.address,date"+geostring1+" "+
                                             "from "+mysql_date1+",product,parkinglots,sells where "+mysql_date2+" sells.sellerid=parkinglots.id and sells.productid=product.id " + 
                                             mysql_prods+" "+mysql_shops+" "+geostring2+order_string, EMPTY_ARGS, new ResultRowMapper());
         
         if (count>helping.size())
            return helping.subList(start,helping.size());
         return helping.subList(start,count);
-        
+      
+
         
     }
 

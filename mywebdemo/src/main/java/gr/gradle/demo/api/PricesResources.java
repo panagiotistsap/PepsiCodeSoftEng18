@@ -160,6 +160,7 @@ public class PricesResources extends ServerResource {
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Need all of geo infos or none");
 			else if(str_Lng!=null){
 				try{
+					System.out.println("gamwwwwww");
 					geoDist = Integer.parseInt(str_geodist);
 					Lng = Double.parseDouble(str_Lng);
 					Lat = Double.parseDouble(str_Lat);
@@ -167,6 +168,8 @@ public class PricesResources extends ServerResource {
 					throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong geo values");
 				}
 			}
+			else	
+				System.out.println("hellooo");
 			System.out.println("ftanw2");
 			//check dates
 			Date date1=null;
@@ -230,6 +233,7 @@ public class PricesResources extends ServerResource {
 				}
 			}
 			System.out.println("ftanw6");
+			System.out.println(geoDist);
 			List<Result> results = dataAccess.getResults(new Limits(start, count),sort_list,geoDist,Lng,Lat,shopsids,productids,tags,str_dateFrom,str_dateTo);
 			Map<String, Object> map = new HashMap<>();
 			//elegxos gia tags

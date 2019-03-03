@@ -416,7 +416,7 @@ public class DataAccess {
         String stat,srt;
         
         //sort
-        String order_string = " order by ";
+        String order_string = "";
         for(i=0;i<sort_list.length-1;i++){
             String[] parts = sort_list[i].split("\\|");
             if (parts[0].equals("geo.dist"))

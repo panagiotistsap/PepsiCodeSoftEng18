@@ -145,13 +145,12 @@ public class SellerResource extends ServerResource {
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "No id value");    
         Form form = new Form(entity);
         String name = form.getFirstValue("name");
-        
         String address = form.getFirstValue("address");
         String str_lng = form.getFirstValue("lng");
         String str_lat = form.getFirstValue("lat");
         String str_with = form.getFirstValue("withdrawn");
         String tags = form.getFirstValue("tags");
-        inp.add(address); inp.add(str_lng); inp.add(str_lat); inp.add(str_lng); inp.add(str_with);
+        inp.add(address); inp.add(str_lng); inp.add(str_lat); inp.add(name); inp.add(str_with);
         inp.add(tags);
         if (this.countnonulls(inp)<=0)
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values"); 

@@ -70,7 +70,8 @@ public class ProductsResource extends ServerResource {
         String str_with  = form.getFirstValue("withdrawn");
         String tags = form.getFirstValue("tags");
         Map<String, Object> map = new HashMap<>();
-        if (name==null || category==null || name.equals("") || category.equals(""))
+        if (name==null || category==null || name.equals("") || category.equals("")
+          || description==null || description.equals("") || tags==null || tags.equals(""))
           throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid Values");
         Boolean withdrawn;
         withdrawn = null;

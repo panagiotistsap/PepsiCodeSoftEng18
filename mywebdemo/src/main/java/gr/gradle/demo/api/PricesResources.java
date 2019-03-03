@@ -268,7 +268,7 @@ public class PricesResources extends ServerResource {
 				help_list.add(results.get(i));
 			}
 			//sorting prices right
-			HashMap<Double, List<Result>> final_hmap = new HashMap<>();
+			LinkedHashMap<Double, List<Result>> final_hmap = new LinkedHashMap<>();
 			if (inner_sort.equals("price|ASC"))
 				Collections.sort(arlist_prices);
 			else

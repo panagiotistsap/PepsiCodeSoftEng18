@@ -158,9 +158,13 @@ public class ProductResource extends ServerResource {
       String category = form.getFirstValue("category");
       String str_with = form.getFirstValue("withdrawn");
       String tags = form.getFirstValue("tags");
-      inp.add(name); inp.add(desc); inp.add(category); inp.add(str_with); inp.add(str_with); inp.add(tags);
-      if (this.countnonulls(inp)<=0)
+      System.out.println(str_with);
+      inp.add(name); inp.add(desc); inp.add(category); inp.add(str_with); inp.add(tags);
+      if (this.countnonulls(inp)<=0){
+        System.out.println("gamiesai");
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
+      }
+
       Map<String, Object> map = new HashMap<>();
       Optional<Product> opt;
       Boolean withdrawn;
@@ -195,6 +199,7 @@ public class ProductResource extends ServerResource {
           if (inp.get(i)!=null)
               sum++;
       }
+      System.out.println(sum);
       if (sum==0)
           return -1;
       if (sum==1)

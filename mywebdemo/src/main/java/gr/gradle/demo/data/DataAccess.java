@@ -170,13 +170,15 @@ public class DataAccess {
         int count = limits.getCount();
         String stat,srt;
         if (status==null || status.equals("ALL")) stat="";
+        else if (status.equals("WITHDRAWN")) stat="where withdrawn=1";
         else if (status.equals("ACTIVE")) stat="where withdrawn=0";
-        else stat="where withdrawn=1";
+        else throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid status Values");
 
-        if (sort==null || sort.equals("id|DESC")) srt="order by id desc";
+        if (sort==null || sort.equals("name|DESC")) srt="order by name desc";
         else if (sort.equals("id|ASC")) srt="order by id";
         else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
-        else srt="order by name desc";
+        else if (sort.equals("id|DESC")) srt="order by name desc";
+        else throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid sort Values");
 
         List<Seller> helping =  jdbcTemplate.query("select * from parkinglots " + stat +" "+ srt, EMPTY_ARGS, new SellerRowMapper());
         if (start>helping.size() || helping.size()==0){

@@ -57,6 +57,8 @@ public class PricesResources extends ServerResource {
     	if(rights==-1)
 			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN , "You dont have access here");	
 		Form form = new Form(entity);
+		//for ( String to_name : form.getNames())
+		//	System.out.println(to_name);
 		String productid = form.getFirstValue("productId");
 		String shopid = form.getFirstValue("shopId");
 		String date_from = form.getFirstValue("dateFrom");
@@ -65,11 +67,17 @@ public class PricesResources extends ServerResource {
 		Double d_price; 
 		Long   l_shopid,l_productid; 
 		Price  final_price;
+		//System.out.println("edw5");
+		//System.out.println(productid);
+		//System.out.println(shopid);
 		if (productid==null || shopid==null)
-		throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Fill the values");
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Fill the values");
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		if ((date_to==null || date_from==null) || !(this.isValidDate(date_to) && this.isValidDate(date_from)) )
+		if ((date_to==null || date_from==null) || !(this.isValidDate(date_to) && this.isValidDate(date_from)) ){
+			System.out.println("edw");
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
+		}
+			
 		else {
 			Date date1=null;
 			Date date2=null;
@@ -78,6 +86,7 @@ public class PricesResources extends ServerResource {
 				date2 = format.parse(date_to);
 			}
 			catch(ParseException e){
+				System.out.println("edw1");
 				System.out.println(e);
 			}
 			if (date2.before(date1))
@@ -88,9 +97,10 @@ public class PricesResources extends ServerResource {
 			l_shopid = Long.parseLong(shopid);
 			l_productid = Long.parseLong(productid);
 		}catch(Exception e){
+			System.out.println("edw2");
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid values");
 		}
-
+		System.out.println("edw4");
 		final_price = dataAccess.postPrice(l_productid,l_shopid,d_price,date_from,date_to);
 		return new JsonPriceRepresentation(final_price);
 	}

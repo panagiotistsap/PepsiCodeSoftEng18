@@ -109,7 +109,7 @@ public class ProductResource extends ServerResource {
       String desc = form.getFirstValue("description");
       String category = form.getFirstValue("category");
       String str_with = form.getFirstValue("withdrawn");
-      String tags = form.getFirstValue("tags");
+      String tags = form.getValues("tags");
       System.out.println(name);
       boolean withdrawn;
       Long id = null;
@@ -157,7 +157,7 @@ public class ProductResource extends ServerResource {
       String desc = form.getFirstValue("description");
       String category = form.getFirstValue("category");
       String str_with = form.getFirstValue("withdrawn");
-      String tags = form.getFirstValue("tags");
+      String tags = form.getValues("tags");
       System.out.println(str_with);
       inp.add(name); inp.add(desc); inp.add(category); inp.add(str_with); inp.add(tags);
       if (this.countnonulls(inp)<=0){

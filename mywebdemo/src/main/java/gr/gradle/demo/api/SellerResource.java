@@ -90,7 +90,7 @@ public class SellerResource extends ServerResource {
         String address = form.getFirstValue("address");
         String  str_Lng = form.getFirstValue("lng");
         String str_Lat = form.getFirstValue("lat");
-        String tags = form.getFirstValue("tags");
+        String tags = form.getValues("tags");
         String str_with = form.getFirstValue("withdrawn");
         Map<String, Object> map = new HashMap<>();    
         Boolean withdrawn;
@@ -148,7 +148,7 @@ public class SellerResource extends ServerResource {
         String address = form.getFirstValue("address");
         String str_lng = form.getFirstValue("lng");
         String str_lat = form.getFirstValue("lat");
-        String str_with = form.getFirstValue("withdrawn");
+        String str_with = form.getValues("withdrawn");
         String tags = form.getFirstValue("tags");
         inp.add(address); inp.add(str_lng); inp.add(str_lat); inp.add(name); inp.add(str_with);
         inp.add(tags);

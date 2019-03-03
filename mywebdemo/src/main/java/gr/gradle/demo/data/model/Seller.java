@@ -7,8 +7,8 @@ public class Seller {
     private final long id;
     private final String name;
     private final String address;
-    private final Double Ing;
-    private final Double Iat;
+    private final Double lng;
+    private final Double lat;
     private final String[] tags;
     private final boolean withdrawn;
 
@@ -16,8 +16,8 @@ public class Seller {
         this.id           = id;
         this.name         = name;
         this.address      = address;
-        this.Ing          = Ing;
-        this.Iat          = Iat;
+        this.lng          = Ing;
+        this.lat          = Iat;
         if (tags!=null)
             this.tags         = tags.split(",");
         else 
@@ -37,13 +37,13 @@ public class Seller {
         else
             this.address = cop.address;
         if (Ing!=null)
-            this.Ing = Ing;
+            this.lng = Ing;
         else    
-            this.Ing = cop.Ing;
+            this.lng = cop.lng;
         if (Iat!=null)
-            this.Iat = Iat;
+            this.lat = Iat;
         else
-            this.Iat = cop.Iat;
+            this.lat = cop.lat;
         if (tags!=null)
             this.tags = tags.split(",");
         else
@@ -67,11 +67,11 @@ public class Seller {
     }
 
     public Double getIng() {
-        return Ing;
+        return lng;
     }
 
     public Double getIat() {
-        return Iat;
+        return lat;
     }
 
     public String getTags() {

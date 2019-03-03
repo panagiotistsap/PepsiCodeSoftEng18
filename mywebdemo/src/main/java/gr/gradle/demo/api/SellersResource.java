@@ -57,33 +57,36 @@ public class SellersResource extends ServerResource {
           throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Shops not found");
         else
           map.put("total", sellers.size());
-        map.put("parking_lots", sellers);
+        map.put("shops", sellers);
 
         return new JsonMapRepresentation(map);
     }
 
     @Override
     protected Representation post(Representation entity) throws ResourceException {
-      String idAttr = getAttribute("id");
+      //String idAttr = getAttribute("id");
       Form form = new Form(entity);
       String name = form.getFirstValue("name");
       String address = form.getFirstValue("address");
       String  str_Lng = form.getFirstValue("lng");
       String str_Lat = form.getFirstValue("lat");
-      String tags = form.getFirstValue("tags");
+      String tags = form.getValues("tags");
       String str_with = form.getFirstValue("withdrawn");
       Map<String, Object> map = new HashMap<>();    
       Boolean withdrawn = false;
+      System.out.println(tags);
       //Read the parameters
       //TODOne: Implement this DONE//
       if (name==null || name.equals("") || address==null || address.equals("") 
             || str_Lng==null || str_Lng.equals("") || str_Lat==null || str_Lat.equals("") ||
-            str_with==null || str_with.equals("") || tags==null || tags.equals("") )
+            /*str_with==null || str_with.equals("")*/ tags==null || tags.equals("") )
             throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Fill all the values"); 
       //check withdrawn
+      if (str_with!=null){
       if (!((str_with.equals("0") || str_with.equals("1") || str_with.equals("true") || str_with.equals("false"))))
         throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid withdrawn Values");
         withdrawn = str_with.equals("1") || str_with.equals("true");
+      }
       //check Lng,Lat
       Double lng,lat;
       try{

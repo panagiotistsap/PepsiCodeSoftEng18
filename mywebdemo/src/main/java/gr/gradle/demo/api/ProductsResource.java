@@ -68,7 +68,7 @@ public class ProductsResource extends ServerResource {
         String description = form.getFirstValue("description");
         String category = form.getFirstValue("category");
         String str_with  = form.getFirstValue("withdrawn");
-        String tags = form.getFirstValue("tags");
+        String tags = form.getValues("tags");
         System.out.println(tags);
         Map<String, Object> map = new HashMap<>();
         if (name==null || category==null || name.equals("") || category.equals("")

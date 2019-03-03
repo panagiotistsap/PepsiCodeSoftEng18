@@ -144,6 +144,9 @@ public class PricesResources extends ServerResource {
 					if (!(sort!="geo.dist|ASC" && sort!="geo.dist|DESC" && sort!="price|ASC" && sort!="price|DESC" 
 						&& sort!="date|ASC" && sort!="date|DESC"))
 						throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong sort value");
+					if ((sort.equals("geo.dist|ASC") || sort.equals("geo.dist|DESC")) && (str_Lng==null || str_Lat==null || str_geodist==null))
+					
+						throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong sort value");
 					if (sort.equals("price|DESC"))
 						inner_sort=sort;
 					System.out.println("ftasame");

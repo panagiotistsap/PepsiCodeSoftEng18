@@ -414,7 +414,6 @@ public class DataAccess {
         int start = (int)limits.getStart();
         int count = limits.getCount();
         String stat,srt;
-        System.out.println("gamw");
         System.out.println(sort_list.length);
         //sort
         String order_string = "";
@@ -423,8 +422,8 @@ public class DataAccess {
             if (parts[0].equals("geo.dist"))
                 parts[0]="geodist";
             System.out.println(parts[0]);
-            if (!(parts[0].equals("price")) && !(Lng==null && parts[0].equals("geodist")))
-                order_string = order_string + parts[0] + " "+parts[1]+", ";   
+            if (!(parts[0].equals("price")))
+                order_string = order_string + parts[0] + " "+parts[1]+",";   
         }
         System.out.println(order_string);
         i = sort_list.length-1;
@@ -432,12 +431,15 @@ public class DataAccess {
         if (parts[0].equals("geo.dist"))
             parts[0]="geodist";
         System.out.println(parts[0]);
-        if (!(parts[0].equals("price")) && !(Lng==null && parts[0].equals("geodist"))){
+        if (!(parts[0].equals("price"))){
             System.out.println("hello");
-        }
             order_string = order_string + parts[0] + " "+parts[1];   
+        }
+        else
+            order_string = order_string.substring(0, order_string.length() - 1);
         if (!(order_string.equals("")))
             order_string = " order by " + order_string;
+        
         System.out.println(order_string);
         //dates
         String mysql_date1="(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) date from"+

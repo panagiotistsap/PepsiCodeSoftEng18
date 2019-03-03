@@ -21,7 +21,7 @@ public class ResultRowMapper implements RowMapper {
         String shopAddress = rs.getString("parkinglots.address");
         String mydate        = rs.getString("selected_date");
 
-        return new Result(price,mydate,productName,shopId,productId,productTags,shopTags,shopAddress);
+        return new Result(price,mydate,productName,shopId,productId,productTags,shopTags,shopAddress,shopName);
     }
 
 }

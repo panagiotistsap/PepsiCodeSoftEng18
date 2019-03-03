@@ -110,6 +110,7 @@ public class PricesResources extends ServerResource {
 		String str_products = getQueryValue("products");
 		String str_tags = getQueryValue("tags");
 		String sort = getQueryValue("sort");
+		String inner_sort="price|ASC";
 		try{
 			//count check
 			if (str_count == null)
@@ -131,7 +132,6 @@ public class PricesResources extends ServerResource {
 			//sort check
 			String[] sort_list;
 			if (sort==null){
-				System.out.println("dick");
 				sort_list = new String[1];
 				sort_list[0] = "price|ASC";
 			}
@@ -144,6 +144,8 @@ public class PricesResources extends ServerResource {
 					if (!(sort!="geo.dist|ASC" && sort!="geo.dist|DESC" && sort!="price|ASC" && sort!="price|DESC" 
 						&& sort!="date|ASC" && sort!="date|DESC"))
 						throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong sort value");
+					if (sort.equals("price|DESC"))
+						inner_sort=sort;
 					System.out.println("ftasame");
 					sort_list[i]=sort;
 				}
@@ -253,20 +255,31 @@ public class PricesResources extends ServerResource {
 		try{
 			HashMap<Double, List<Result>> price_map = new HashMap<>();
 			Double price_help; List<Result> help_list;
+			ArrayList<Double> arlist_prices = new ArrayList<Double>();
 			for(i = 0;i <results.size();i++){
 				price_help = results.get(i).getprice();
 				if (price_map.containsKey(price_help))
 					help_list = price_map.get(price_help);
 				else{
+					arlist_prices.add(price_help);
 					help_list = new ArrayList<Result>();
 					price_map.put(price_help,help_list);
 				}
 				help_list.add(results.get(i));
 			}
+			//sorting prices right
+			HashMap<Double, List<Result>> final_hmap = new HashMap<>();
+			if (inner_sort.equals("price|ASC"))
+				Collections.sort(arlist_prices);
+			else
+				Collections.sort(arlist_prices, Collections.reverseOrder());
+			for(i=0;i<arlist_prices.size();i++){
+				final_hmap.put(arlist_prices.get(i),price_map.get(arlist_prices.get(i)));
+			}
 			map.put("start", start);
 			map.put("count", count);
-			map.put("total", price_map.size());
-			map.put("prices",price_map);
+			map.put("total", final_hmap.size());
+			map.put("prices",final_hmap);
 			//return null;
 			
 			return new JsonMapRepresentation(map);

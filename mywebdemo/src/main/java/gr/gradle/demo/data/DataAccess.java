@@ -421,6 +421,8 @@ public class DataAccess {
             String[] parts = sort_list[i].split("\\|");
             if (parts[0].equals("geo.dist"))
                 parts[0]="geodist";
+            if (parts[0].equals("price"))
+                continue;
             order_string = order_string + parts[0] + " "+parts[1]+", ";   
         }
         String[] parts = sort_list[sort_list.length-1].split("\\|");
@@ -428,15 +430,16 @@ public class DataAccess {
         //System.out.println(order_string);
         //dates
         String mysql_date1="(select adddate('1970-01-01',t4.i*10000 + t3.i*1000 + t2.i*100 + t1.i*10 + t0.i) selected_date from"+
-       "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,"+
+        "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t0,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t1,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t2,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t3,"+
         "(select 0 i union select 1 union select 2 union select 3 union select 4 union select 5 union select 6 union select 7 union select 8 union select 9) t4) v";
         String mysql_date2="selected_date between greatest(sells.datefrom,'"+datefrom+"') and least(sells.dateto,'"+dateto+"') and";
-        /*if (datefrom!=null && dateto!=null){
-            mysql_date="and sells.datefrom between '" + datefrom + "' and '"+dateto+"' ";
-            mysql_date = mysql_date + "and sells.dateto between '" + datefrom + "' and '"+dateto+"' ";
+        /*
+            if (datefrom!=null && dateto!=null){
+                mysql_date="and sells.datefrom between '" + datefrom + "' and '"+dateto+"' ";
+                mysql_date = mysql_date + "and sells.dateto between '" + datefrom + "' and '"+dateto+"' ";
         }*/
         //shop ids
         String mysql_shops="";

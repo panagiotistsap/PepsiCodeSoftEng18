@@ -6,23 +6,25 @@ public class Result {
 
     private final Double price;
     private final String date;
-    private final String product_name;
-    private final Long shopid;
-    private final Long productsid;
-    private final String pr_tags;
-    private final String sh_tags;
-    private final String address;    
+    private final String productName;
+    private final Long shopId;
+    private final Long productId;
+    private final String productTags;
+    private final String shopTags;
+    private final String shopAddress;    
+    private final String shopName;
     
     public Result(Double price, String mydate, String product_name, Long shopid, Long productsid, String pr_tags, String sh_tags,
-        String address ){
+        String address, String sh_name ){
     	this.price = price;
-    	this.shopid = shopid;
-        this.productsid = productsid;
-        this.product_name = product_name;
+    	this.shopId = shopid;
+        this.productId = productsid;
+        this.productName = product_name;
         this.date  = mydate;
-        this.pr_tags = pr_tags;
-        this.sh_tags = sh_tags;
-        this.address = address;
+        this.productTags = pr_tags;
+        this.shopTags = sh_tags;
+        this.shopAddress = address;
+        this.shopName = sh_name;
 
     }
 
@@ -31,7 +33,7 @@ public class Result {
     }
 
     public String gettags(){
-        return pr_tags+","+sh_tags;
+        return productTags+","+shopTags;
 
     }
 

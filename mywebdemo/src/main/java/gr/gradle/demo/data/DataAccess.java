@@ -466,7 +466,7 @@ public class DataAccess {
         }
         System.out.println("ftanw7");
         if (mysql_shops!="")
-            mysql_shops="and "+mysql_shops;
+            mysql_shops=" and parkinglots.id in "+mysql_shops+" ";
         //productsid
         String mysql_prods="";
         if (productids!=null){
@@ -476,7 +476,7 @@ public class DataAccess {
             mysql_prods=mysql_prods+String.valueOf(productids[productids.length-1])+")";           
         }
         if (!mysql_prods.equals(""))
-            mysql_prods="and "+mysql_prods;
+            mysql_prods=" and product.id in "+mysql_prods+" ";
         System.out.println("geodist:");
         System.out.println(geoDist);
         String geostring1="";

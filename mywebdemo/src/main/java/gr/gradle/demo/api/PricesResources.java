@@ -205,17 +205,17 @@ public class PricesResources extends ServerResource {
 			if (str_shops!=null){
 				String[] parts = str_shops.split(",");
 				shopsids = new Long[parts.length];
-				for(i=0;i<parts.length;i++);{
+				for(i=0;i<parts.length;i++){
 					shopsids[i] = Long.parseLong(parts[i]);
 				}
 			}
 			System.out.println("ftanw4");
-			//check shops
+			//check products
 			Long[] productids = null;
 			if (str_products!=null){
 				String[] parts = str_products.split(",");
 				productids = new Long[parts.length];
-				for(i=0;i<parts.length;i++);{
+				for(i=0;i<parts.length;i++){
 					productids[i] = Long.parseLong(parts[i]);
 				}
 			}

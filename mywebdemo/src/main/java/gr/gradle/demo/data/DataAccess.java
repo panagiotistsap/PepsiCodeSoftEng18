@@ -174,10 +174,10 @@ public class DataAccess {
         else if (status.equals("ALL")) stat="";
         else throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid status Values");
 
-        if (sort==null || sort.equals("name|DESC")) srt="order by name desc";
+        if (sort==null || sort.equals("id|DESC")) srt="order by id desc";
         else if (sort.equals("id|ASC")) srt="order by id";
         else if (sort.equals("name|ASC")) {srt="order by name"; System.out.println("geiaaaaaaaa");}
-        else if (sort.equals("id|DESC")) srt="order by name desc";
+        else if (sort.equals("name|DESC")) srt="order by name desc";
         else throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid sort Values");
 
         List<Seller> helping =  jdbcTemplate.query("select * from parkinglots " + stat +" "+ srt, EMPTY_ARGS, new SellerRowMapper());

@@ -65,8 +65,10 @@ public class PricesResources extends ServerResource {
 		Double d_price; 
 		Long   l_shopid,l_productid; 
 		Price  final_price;
+		if (productid==null || shopid==null)
+		throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Fill the values");
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		if (!(this.isValidDate(date_to) && this.isValidDate(date_from)) )
+		if ((date_to==null || date_from==null) || !(this.isValidDate(date_to) && this.isValidDate(date_from)) )
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Invalid date values");
 		else {
 			Date date1=null;

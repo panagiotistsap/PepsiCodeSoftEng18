@@ -435,8 +435,10 @@ public class DataAccess {
             System.out.println("hello");
             order_string = order_string + parts[0] + " "+parts[1];   
         }
-        else
+        else{
+            if (order_string.length()>1)
             order_string = order_string.substring(0, order_string.length() - 1);
+        }
         if (!(order_string.equals("")))
             order_string = " order by " + order_string;
         

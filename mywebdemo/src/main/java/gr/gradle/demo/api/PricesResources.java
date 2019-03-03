@@ -27,9 +27,28 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 import org.restlet.util.*;
 import org.restlet.data.Header;
-import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import org.restlet.data.Form;
+import gr.gradle.demo.conf.Configuration;
+import gr.gradle.demo.data.DataAccess;
+import gr.gradle.demo.data.model.Product;
+import org.restlet.data.Status;
+import org.restlet.engine.adapter.HttpRequest;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
+import org.restlet.engine.header.*;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.Map;
+import java.util.*;
+import org.restlet.util.*;
+import java.lang.Object;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.restlet.data.Header;
+
 
 
 public class PricesResources extends ServerResource {

@@ -27,13 +27,19 @@ public class SignupController extends HttpServlet {
         String SS="";
         Boolean res=true;
         if (un==null || plaintext==null || pw2==null){
-            res = false; SS = "fill all values";
+			res = false; SS = "Συμπλήρωσε όλες τις τιμές";
+			request.setAttribute("name",SS);
+            request.getRequestDispatcher("response.jsp").forward(request, response);
         }
-        if ( res && !plaintext.equals(pw2)){
-            res = false; SS = "passwords dont match";
+        if (res && !plaintext.equals(pw2)){
+			res = false; SS = "Δεν ταιριάζουν οι κωδικοί";
+			request.setAttribute("name",SS);
+            request.getRequestDispatcher("response.jsp").forward(request, response);
         }
         if (res && !dataAccess.ch_un_avl(un)){
-            res = false; SS = "username not available";
+			res = false; SS = "Το όνομα χρησιμοποιείται ήδη";
+			request.setAttribute("name",SS);
+            request.getRequestDispatcher("response.jsp").forward(request, response);
         }
         if (!res){
             request.setAttribute("name",SS);

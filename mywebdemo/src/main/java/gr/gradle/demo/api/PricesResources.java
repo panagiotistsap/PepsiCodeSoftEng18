@@ -170,7 +170,7 @@ public class PricesResources extends ServerResource {
 			Date date2=null;
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			format.setLenient(false);
-			if (!((str_dateFrom==null && str_dateTo==null) || (str_dateFrom!=null || str_dateTo!=null)))
+			if (!((str_dateFrom==null && str_dateTo==null) || (str_dateFrom!=null && str_dateTo!=null)))
 				throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Need all of date infos or none");
 			else if(str_dateFrom!=null){
 				if(!isValidDate(str_dateFrom) || !isValidDate(str_dateTo))

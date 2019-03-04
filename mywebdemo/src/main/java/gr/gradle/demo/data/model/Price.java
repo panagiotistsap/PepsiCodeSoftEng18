@@ -8,11 +8,13 @@ import java.text.ParseException;
 
 public class Price {
 
-    private final Long productId;
-    private final String shopId;
     private final Double price;
     private final String dateFrom;
     private final String dateTo;
+    private final Long productId;
+    private final String shopId;
+    
+    
     
     public Price(long productid, long shopid, Double price, String datefrom, String dateto){
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
